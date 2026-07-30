@@ -2,6 +2,8 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
+import dashboardImage from "../exports/image.png";
+import { BloomMark } from "./components/BloomMark";
 
 const stages = [
   {
@@ -61,29 +63,37 @@ function Arrow({ diagonal = false }: { diagonal?: boolean }) {
 
 function Logo({ light = false }: { light?: boolean }) {
   return (
-    <span className={`logo ${light ? "logo-light" : ""}`}>
-      <Image src="/brikli.svg" alt="Brikli" width={225} height={225} />
+    <span className={`logo ${light ? "logo-light" : ""}`} role="img" aria-label="Brikli">
+      <Image src="/brikli.svg" alt="" width={225} height={225} aria-hidden="true" />
+      <span className="logo-word" aria-hidden="true">Brikli</span>
     </span>
   );
 }
 
 export default function Home() {
   const [loaded, setLoaded] = useState(false);
+  const [introVisible, setIntroVisible] = useState(true);
+  const [introLeaving, setIntroLeaving] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [activeStage, setActiveStage] = useState(0);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
     const loadTimer = window.setTimeout(() => setLoaded(true), 60);
-    const stageTimer = window.setInterval(
-      () => setActiveStage((current) => (current + 1) % stages.length),
-      3800,
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const introLeaveTimer = window.setTimeout(
+      () => setIntroLeaving(true),
+      reducedMotion ? 80 : 1850,
     );
-
+    const introRemoveTimer = window.setTimeout(
+      () => setIntroVisible(false),
+      reducedMotion ? 280 : 3150,
+    );
     const onScroll = () => {
-      setScrolled(window.scrollY > 32);
+      setScrolled(window.scrollY > window.innerHeight - 90);
       document.documentElement.style.setProperty(
         "--hero-shift",
         `${Math.min(window.scrollY, 700) * 0.1}px`,
@@ -105,19 +115,53 @@ export default function Home() {
 
     return () => {
       window.clearTimeout(loadTimer);
-      window.clearInterval(stageTimer);
+      window.clearTimeout(introLeaveTimer);
+      window.clearTimeout(introRemoveTimer);
       window.removeEventListener("scroll", onScroll);
       observer.disconnect();
     };
   }, []);
 
-  const submitForm = (event: FormEvent<HTMLFormElement>) => {
+  const submitForm = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setSubmitError("");
+
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.get("name"),
+          email: formData.get("email"),
+          city: formData.get("city"),
+          portfolio: formData.get("portfolio"),
+          website: formData.get("website"),
+        }),
+      });
+
+      if (!response.ok) throw new Error("Submission failed");
+
+      form.reset();
+      setSubmitted(true);
+    } catch {
+      setSubmitError("We couldn’t send this right now. Please email jonathan@brikli.com directly.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <main>
+      {introVisible && (
+        <div className={`bloom-intro ${introLeaving ? "bloom-intro-leaving" : ""}`} aria-hidden="true">
+          <BloomMark size={176} speed={1.35} loop={false} color="#f4f1e8" />
+        </div>
+      )}
+
       <header className={`site-header ${scrolled ? "header-scrolled" : ""}`}>
         <div className="nav-shell">
           <a href="#top" aria-label="Brikli home"><Logo /></a>
@@ -166,13 +210,13 @@ export default function Home() {
           <div className={`hero-copy ${loaded ? "hero-copy-in" : ""}`}>
             <h1>Every lease.<br />Every deadline.<br /><em>Handled.</em></h1>
             <p className="hero-deck">
-              Brikli ensures renewals, notices, and rent increases happen on time—before gaps turn into lost revenue.
+              Brikli ensures renewals, notices, and rent increases happen on time before gaps turn into lost revenue.
             </p>
             <div className="hero-actions">
               <a className="button button-paper" href="https://calendly.com/jonathan-brikli" target="_blank" rel="noreferrer">
-                Book a demo <Arrow diagonal />
+                Book a demo
               </a>
-              <a className="button button-ghost" href="#platform">See the platform <Arrow /></a>
+              <a className="button button-ghost" href="#platform">See the platform</a>
             </div>
           </div>
         </div>
@@ -184,19 +228,16 @@ export default function Home() {
       <section className="manifesto section" id="platform">
         <div className="container manifesto-grid">
           <div>
-            <p className="eyebrow" data-reveal>The lease intelligence layer</p>
-            <h2 className="display-heading muted-reveal" data-reveal>
+            <h2 className="display-heading muted-reveal">
               Your portfolio should run on intelligence, <em>not institutional memory.</em>
             </h2>
-            <div className="manifesto-copy" data-reveal>
+            <div className="manifesto-copy">
               <p>Revenue is rarely lost all at once. It slips through a renewal sent late, a notice drafted wrong, or a turnover that sat too long.</p>
               <p>Brikli turns the documents you already have into a living system of tenants, timelines, and revenue actions—before your team has to chase them.</p>
             </div>
           </div>
 
           <div className="lease-art" aria-hidden="true" data-reveal>
-            <div className="orb orb-one" />
-            <div className="orb orb-two" />
             <div className="lease-paper">
               <div className="lease-paper-head"><Logo /><span>LEASE / 00142</span></div>
               <p>1250 Pine Street</p>
@@ -205,8 +246,6 @@ export default function Home() {
               <div className="paper-event"><span>42</span><p>days until<br />renewal window</p></div>
               <div className="paper-status"><i /> All terms extracted</div>
             </div>
-            <div className="floating-tag tag-top"><i /> N1 notice due</div>
-            <div className="floating-tag tag-bottom">Audit trail · current</div>
           </div>
         </div>
 
@@ -217,8 +256,8 @@ export default function Home() {
             ["03", "Compliance built in", "The right jurisdiction, timeline, form, and rent cap are applied to every workflow automatically."],
             ["04", "Every action, accountable", "A complete audit trail follows every notice, approval, edit, and send across the portfolio."],
           ].map(([number, title, copy], index) => (
-            <article className="principle" data-reveal key={number} style={{ "--delay": `${index * 70}ms` } as React.CSSProperties}>
-              <span className="eyebrow accent">{number}</span>
+            <article className="principle" data-reveal key={number} style={{ "--delay": `${index * 220}ms` } as React.CSSProperties}>
+              <span className="principle-number">{number}</span>
               <h3>{title}</h3>
               <p>{copy}</p>
             </article>
@@ -229,14 +268,13 @@ export default function Home() {
       <section className="photo-break">
         <div className="photo-frame" data-reveal>
           <Image
-            src="/brikli-atrium.jpg"
-            alt="Atrium of a refined multifamily residence"
+            src="/output-image (1).png"
+            alt="Painted atrium of a refined multifamily residence"
             fill
             sizes="100vw"
           />
           <div className="photo-overlay" />
           <div className="photo-copy">
-            <p className="eyebrow light">Built for the long term</p>
             <h2>Infrastructure for the<br /><em>modern portfolio.</em></h2>
             <p>Built alongside the teams responsible for keeping buildings occupied, compliant, and growing.</p>
           </div>
@@ -246,74 +284,32 @@ export default function Home() {
       <section className="engine section-dark" id="how-it-works">
         <div className="container">
           <div className="section-intro dark-intro" data-reveal>
-            <p className="eyebrow light">How Brikli works</p>
             <h2>One platform.<br /><em>Every lease workflow.</em></h2>
             <p>Brikli reads what happened, knows what comes next, and prepares the action your team needs to take.</p>
           </div>
 
           <div className="engine-layout">
-            <div className="stage-list" role="tablist" aria-label="Lease workflow stages">
-              {stages.map((stage, index) => (
-                <button
+            <div className="stage-list" role="list" aria-label="Lease workflow stages">
+              {stages.map((stage) => (
+                <div
                   key={stage.number}
-                  className={`stage-button ${index === activeStage ? "stage-active" : ""}`}
-                  onClick={() => setActiveStage(index)}
-                  role="tab"
-                  aria-selected={index === activeStage}
+                  className="stage-button stage-active"
+                  role="listitem"
                 >
                   <span>{stage.number}</span>
                   <div><small>{stage.name}</small><strong>{stage.title}</strong></div>
                   <i />
-                </button>
+                </div>
               ))}
             </div>
 
             <div className="control-room" data-reveal>
-              <div className="control-topbar">
-                <Logo light />
-                <span className="live-pill"><i /> LIVE</span>
-                <span>1250 PINE / UNIT 412</span>
-              </div>
-              <div className="control-body">
-                <div className="control-sidebar">
-                  <span className="side-active">Overview</span>
-                  <span>Leases <i>62</i></span>
-                  <span>Workflows <i>3</i></span>
-                  <span>Documents</span>
-                  <span>Audit trail</span>
-                </div>
-                <div className="control-main">
-                  <div className="workflow-heading">
-                    <div><small>LEASE WORKFLOW</small><h3>{stages[activeStage].title}</h3></div>
-                    <span>Updated now</span>
-                  </div>
-                  <p className="workflow-description">{stages[activeStage].body}</p>
-                  <div className="workflow-grid">
-                    <div className="document-card">
-                      <div className="doc-title"><span>PDF</span><p>Lease_1250_Pine_412.pdf</p><i>12 pages</i></div>
-                      <div className="doc-preview">
-                        <b>RESIDENTIAL<br />TENANCY AGREEMENT</b>
-                        <i /><i /><i /><i /><i />
-                        <div className="scan-line" />
-                      </div>
-                    </div>
-                    <div className="action-stack">
-                      {stages[activeStage].points.map((point, index) => (
-                        <div className="action-card" key={point}>
-                          <span>{index + 1}</span>
-                          <div><small>{index === 2 ? "READY" : "COMPLETE"}</small><strong>{point}</strong></div>
-                          <i>✓</i>
-                        </div>
-                      ))}
-                      <button className="review-button">Review prepared action <Arrow /></button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="control-footer">
-                <span><i /> Secure Canadian data residency</span>
-                <span>Every action logged</span>
-              </div>
+              <Image
+                className="control-room-image"
+                src={dashboardImage}
+                alt="Brikli property operations dashboard"
+                sizes="(max-width: 780px) 94vw, 90vw"
+              />
             </div>
           </div>
         </div>
@@ -322,8 +318,7 @@ export default function Home() {
       <section className="setup section" id="why-brikli">
         <div className="container">
           <div className="section-intro" data-reveal>
-            <p className="eyebrow">Zero setup</p>
-            <h2>Drop your leases.<br /><em>Portfolio mapped instantly.</em></h2>
+            <h2>Drop your leases. <em>Portfolio mapped instantly.</em></h2>
             <p>Brikli turns the files sitting in your inbox and drives into a live portfolio—with every tenant, timeline, and action already in place.</p>
           </div>
 
@@ -339,9 +334,8 @@ export default function Home() {
                 <span><b>PDF</b> N1 notice</span>
               </div>
             </div>
-            <div className="process-arrow"><span>Brikli AI</span><i>→</i></div>
+            <div className="process-arrow"><span></span><i>→</i></div>
             <div className="portfolio-result">
-              <div className="result-head"><small>PORTFOLIO CREATED</small><span><i /> LIVE</span></div>
               <h3>Oakwood Residential</h3>
               <div className="result-stats">
                 <div><strong>62</strong><small>LEASES</small></div>
@@ -366,60 +360,31 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="revenue section">
-        <div className="container revenue-grid">
-          <div className="revenue-copy" data-reveal>
-            <p className="eyebrow light">The math you haven&apos;t done</p>
-            <h2>Same portfolio.<br /><em>Higher revenue.</em></h2>
-            <p>Missed renewals, invalid notices, slow turns, and under-market pricing compound quietly. Brikli catches the events that keep revenue moving.</p>
-            <a href="#contact" className="text-link light-link">Model your portfolio <Arrow /></a>
-          </div>
-          <div className="revenue-card" data-reveal>
-            <div className="revenue-card-head"><span>ESTIMATED ANNUAL RECOVERY</span><small>175 UNITS · ON + QC</small></div>
-            <strong className="revenue-number">$78K<span>—</span>$186K</strong>
-            <p>1.9%—4.5% of gross portfolio revenue</p>
-            <div className="recovery-bars">
-              {[
-                ["Missed or delayed renewals", "84%"],
-                ["Vacancy gap compression", "66%"],
-                ["Under-market renewal pricing", "54%"],
-                ["Compliance penalties avoided", "38%"],
-              ].map(([label, width]) => (
-                <div key={label}><span>{label}</span><i><b style={{ width }} /></i></div>
-              ))}
-            </div>
-            <small>Based on CMHC 2025 data and operator benchmarks.</small>
-          </div>
-        </div>
-      </section>
-
       <section className="trust section">
-        <div className="container">
-          <div className="trust-heading" data-reveal>
-            <p className="eyebrow">Built for responsible operations</p>
-            <h2>The intelligent parts touch the least data.</h2>
-            <p>Brikli reads leases and property records to run workflows. Your team controls approvals, and every action is visible.</p>
+        <div className="container trust-layout">
+          <div className="trust-copy" data-reveal>
+            <h2>Built to the standards your portfolio demands.</h2>
+            <p>Brikli reads leases and property records to run workflows, never to replace your judgment. Your team controls approvals, and every action stays visible.</p>
           </div>
-          <div className="trust-grid">
+          <div className="standards-list" data-reveal>
             {[
-              ["01", "Human approval", "Nothing leaves your account until your team says so."],
-              ["02", "Jurisdiction aware", "Rules and forms are matched to every property automatically."],
-              ["03", "Complete audit trail", "Every source, edit, approval, and send is recorded."],
-            ].map(([number, title, copy]) => (
-              <article key={number} data-reveal>
-                <span>{number}</span><div className="trust-icon"><i /><i /><i /></div><h3>{title}</h3><p>{copy}</p>
+              ["Human approval", "Nothing leaves your account until your team says so."],
+              ["Jurisdiction aware", "Rules, timelines, and forms are matched to every property."],
+              ["Complete audit trail", "Every source, edit, approval, and send is recorded."],
+            ].map(([title, copy]) => (
+              <article className="standard-row" key={title}>
+                <div><h3>{title}</h3><p>{copy}</p></div>
               </article>
             ))}
+            <a href="mailto:jonathan@brikli.com">Talk to us about security <span aria-hidden="true">↗</span></a>
           </div>
         </div>
       </section>
 
       <section className="faq section" id="faq">
-        <div className="container faq-grid">
+        <div className="container faq-layout">
           <div className="faq-heading" data-reveal>
-            <p className="eyebrow">Questions, answered</p>
-            <h2>Everything you&apos;d ask <em>in a demo.</em></h2>
-            <a href="mailto:support@brikli.com" className="text-link">Still curious? Talk to us <Arrow /></a>
+            <h2>Questions, answered</h2>
           </div>
           <div className="accordion" data-reveal>
             {faqs.map((faq, index) => (
@@ -437,7 +402,6 @@ export default function Home() {
       <section className="contact section-dark" id="contact">
         <div className="container contact-grid">
           <div className="contact-copy" data-reveal>
-            <p className="eyebrow light">Early access</p>
             <h2>Put every lease<br /><em>to work.</em></h2>
             <p>Join Canadian multifamily operators building a portfolio that acts before revenue slips away.</p>
             <ul>
@@ -450,13 +414,13 @@ export default function Home() {
             {submitted ? (
               <div className="success-message">
                 <span>✓</span>
-                <p className="eyebrow">You&apos;re on the list</p>
                 <h3>Thanks. We&apos;ll be in touch within 24 hours.</h3>
                 <button onClick={() => setSubmitted(false)}>Send another inquiry</button>
               </div>
             ) : (
               <form onSubmit={submitForm}>
-                <div className="form-heading"><span>GET IN TOUCH</span><p>Tell us about your portfolio.</p></div>
+                <div className="form-heading"><p>Tell us about your portfolio.</p></div>
+                <label className="form-honeypot" aria-hidden="true"><span>Website</span><input name="website" tabIndex={-1} autoComplete="off" /></label>
                 <label><span>Name</span><input name="name" autoComplete="name" required /></label>
                 <div className="form-row">
                   <label><span>Work email</span><input type="email" name="email" autoComplete="email" required /></label>
@@ -470,7 +434,10 @@ export default function Home() {
                     <option>201—500 units</option><option>500+ units</option>
                   </select>
                 </label>
-                <button className="button button-forest" type="submit">Join the waitlist <Arrow /></button>
+                {submitError && <p className="form-error" role="alert">{submitError}</p>}
+                <button className="button button-forest" type="submit" disabled={submitting}>
+                  {submitting ? "Sending…" : "Join the waitlist"} {!submitting && <Arrow />}
+                </button>
                 <small>By submitting, you agree to be contacted about Brikli.</small>
               </form>
             )}
@@ -478,22 +445,36 @@ export default function Home() {
         </div>
       </section>
 
-      <footer>
+      <footer className="site-footer">
         <div className="container footer-main">
-          <div><Logo light /><p>The lease intelligence layer for Canadian multifamily.</p></div>
-          <a className="footer-cta" href="https://calendly.com/jonathan-brikli" target="_blank" rel="noreferrer">Book a demo <Arrow diagonal /></a>
-        </div>
-        <div className="container footer-bottom">
-          <span>© 2026 BRIKLI</span>
-          <nav>
-            <a href="mailto:support@brikli.com">Support</a>
-            <a href="https://www.linkedin.com/company/brikli" target="_blank" rel="noreferrer">LinkedIn</a>
-            <a href="https://www.instagram.com/briklihq/" target="_blank" rel="noreferrer">Instagram</a>
-            <a href="https://brikli.com/privacy.html">Privacy</a>
-            <a href="https://brikli.com/terms.html">Terms</a>
+          <div className="footer-brand">
+            <Logo />
+            <p>Lease intelligence for modern multifamily operators.</p>
+            <a className="footer-demo" href="https://calendly.com/jonathan-brikli" target="_blank" rel="noreferrer">
+              Book a demo <Arrow />
+            </a>
+          </div>
+          <nav className="footer-links" aria-label="Footer navigation">
+            <div>
+              <a href="#platform">Platform</a>
+              <a href="#how-it-works">How it works</a>
+              <a href="#why-brikli">Why Brikli</a>
+              <a href="#faq">FAQ</a>
+            </div>
+            <div>
+              <a href="#contact">Contact</a>
+              <a href="mailto:jonathan@brikli.com">Support</a>
+              <a href="https://www.linkedin.com/company/brikli" target="_blank" rel="noreferrer">LinkedIn</a>
+              <a href="https://www.instagram.com/briklihq/" target="_blank" rel="noreferrer">Instagram</a>
+            </div>
           </nav>
         </div>
+        <div className="container footer-bottom">
+          <span>© 2026 Brikli. All rights reserved.</span>
+          <a href="mailto:jonathan@brikli.com">jonathan@brikli.com</a>
+        </div>
       </footer>
+
     </main>
   );
 }

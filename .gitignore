@@ -14,6 +14,7 @@
 .DS_Store
 *.pem
 .env*
+!.env.example
 
 # typescript
 *.tsbuildinfo
