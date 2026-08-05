@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Email service unavailable" }, { status: 503 });
   }
 
-  const to = process.env.CONTACT_TO_EMAIL || "jonathan@brikli.com";
+  const to = process.env.CONTACT_TO_EMAIL || "support@brikli.com";
   const message = [
     "New Brikli website inquiry",
     "",

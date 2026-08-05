@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useState } from "react";
-import dashboardImage from "../exports/image.png";
 import { BloomMark } from "./components/BloomMark";
 
 const stages = [
@@ -31,7 +30,7 @@ const stages = [
 
 const faqs = [
   {
-    question: "Does Brikli work in my province?",
+    question: "Does Brikli work in my province/state?",
     answer:
       "Brikli is built for Canadian multifamily landlords, starting with Ontario, British Columbia, Alberta, and Québec. Your province is verified during setup so the correct rules, timelines, and forms are applied automatically.",
   },
@@ -148,7 +147,7 @@ export default function Home() {
       form.reset();
       setSubmitted(true);
     } catch {
-      setSubmitError("We couldn’t send this right now. Please email jonathan@brikli.com directly.");
+      setSubmitError("We couldn’t send this right now. Please email support@brikli.com directly.");
     } finally {
       setSubmitting(false);
     }
@@ -289,6 +288,33 @@ export default function Home() {
           </div>
 
           <div className="engine-layout">
+            <div className="stage-visual-grid">
+              <div className="stage-visual stage-visual-reads" data-reveal>
+                <Image
+                  src="/brikli-lease-scanner.svg"
+                  alt="Brikli scanning documents from a lease library"
+                  width={688}
+                  height={500}
+                />
+              </div>
+              <div className="stage-visual stage-visual-deadlines" data-reveal>
+                <Image
+                  src="/brikli-deadline-intelligence.svg"
+                  alt="Brikli checking lease records against a deadline"
+                  width={640}
+                  height={498}
+                />
+              </div>
+              <div className="stage-visual stage-visual-executes" data-reveal>
+                <Image
+                  src="/brikli-workflow-execution.png"
+                  alt="Brikli moving a lease workflow from preparation through approval to completion"
+                  width={1470}
+                  height={1070}
+                />
+              </div>
+            </div>
+
             <div className="stage-list" role="list" aria-label="Lease workflow stages">
               {stages.map((stage) => (
                 <div
@@ -301,15 +327,6 @@ export default function Home() {
                   <i />
                 </div>
               ))}
-            </div>
-
-            <div className="control-room" data-reveal>
-              <Image
-                className="control-room-image"
-                src={dashboardImage}
-                alt="Brikli property operations dashboard"
-                sizes="(max-width: 780px) 94vw, 90vw"
-              />
             </div>
           </div>
         </div>
@@ -338,9 +355,9 @@ export default function Home() {
             <div className="portfolio-result">
               <h3>Oakwood Residential</h3>
               <div className="result-stats">
-                <div><strong>62</strong><small>LEASES</small></div>
-                <div><strong>14</strong><small>UPCOMING</small></div>
-                <div><strong>3</strong><small>ACTIONS</small></div>
+                <div><strong>1520</strong><small>LEASES</small></div>
+                <div><strong>96</strong><small>UPCOMING</small></div>
+                <div><strong>50</strong><small>ACTIONS</small></div>
               </div>
               <div className="event-row"><span>N1</span><p>Rent increase · Unit 412<small>Ready to review</small></p><b>Today</b></div>
               <div className="event-row"><span>R</span><p>Renewal · Unit 7B<small>Window opens</small></p><b>3 days</b></div>
@@ -348,15 +365,6 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="setup-steps">
-            {[
-              ["1", "Upload", "Lease PDFs and rent rolls"],
-              ["2", "Brikli reads", "Terms, deadlines, and risks mapped"],
-              ["3", "Workflows appear", "Renewals and notices ready"],
-            ].map(([number, title, copy]) => (
-              <div key={number} data-reveal><span>{number}</span><h3>{title}</h3><p>{copy}</p></div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -376,7 +384,7 @@ export default function Home() {
                 <div><h3>{title}</h3><p>{copy}</p></div>
               </article>
             ))}
-            <a href="mailto:jonathan@brikli.com">Talk to us about security <span aria-hidden="true">↗</span></a>
+            <a href="mailto:support@brikli.com">Talk to us about security <span aria-hidden="true">↗</span></a>
           </div>
         </div>
       </section>
@@ -445,10 +453,10 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="site-footer">
+      <footer className="site-footer" id="footer">
+        <div className="footer-fade" />
         <div className="container footer-main">
-          <div className="footer-brand">
-            <Logo />
+          <div className="footer-intro">
             <p>Lease intelligence for modern multifamily operators.</p>
             <a className="footer-demo" href="https://calendly.com/jonathan-brikli" target="_blank" rel="noreferrer">
               Book a demo <Arrow />
@@ -463,15 +471,27 @@ export default function Home() {
             </div>
             <div>
               <a href="#contact">Contact</a>
-              <a href="mailto:jonathan@brikli.com">Support</a>
+              <a href="mailto:support@brikli.com">Support</a>
               <a href="https://www.linkedin.com/company/brikli" target="_blank" rel="noreferrer">LinkedIn</a>
               <a href="https://www.instagram.com/briklihq/" target="_blank" rel="noreferrer">Instagram</a>
             </div>
           </nav>
         </div>
+        <div className="container footer-showcase">
+          <div className="footer-lockup" role="img" aria-label="Brikli">
+            <span aria-hidden="true">Brikli</span>
+            <Image
+              src="/brikli.svg"
+              alt=""
+              width={225}
+              height={225}
+              aria-hidden="true"
+            />
+          </div>
+        </div>
         <div className="container footer-bottom">
           <span>© 2026 Brikli. All rights reserved.</span>
-          <a href="mailto:jonathan@brikli.com">jonathan@brikli.com</a>
+          <a href="mailto:support@brikli.com">support@brikli.com</a>
         </div>
       </footer>
 
