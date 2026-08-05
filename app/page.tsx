@@ -480,13 +480,14 @@ export default function Home() {
         <div className="container footer-showcase">
           <div className="footer-lockup" role="img" aria-label="Brikli">
             <span aria-hidden="true">Brikli</span>
-            <Image
-              src="/brikli.svg"
-              alt=""
-              width={225}
-              height={225}
-              aria-hidden="true"
-            />
+            <div className="footer-mark" aria-hidden="true">
+              <Image
+                src="/brikli.svg"
+                alt=""
+                width={225}
+                height={225}
+              />
+            </div>
           </div>
         </div>
         <div className="container footer-bottom">
