@@ -18,7 +18,7 @@ const display = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   title: "Brikli — The lease intelligence layer",
   description:
-    "Brikli reads every lease, tracks every deadline, and runs every workflow for Canadian multifamily portfolios.",
+    "Brikli reads every lease, tracks every deadline, and runs every workflow for Canadian portfolios.",
   metadataBase: new URL("https://brikli.com"),
   openGraph: {
     title: "Brikli — Capture the revenue your portfolio is missing",

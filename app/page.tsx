@@ -1,30 +1,38 @@
 "use client";
 
 import Image from "next/image";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { BloomMark } from "./components/BloomMark";
 
-const stages = [
+const manifestoCopy =
+  "Brikli turns leases, rent rolls, and property records into compliant renewals, rent increases, and notices on the right provincial form and timeline. Every action is logged for audit, so your team can focus on decisions, not deadlines.";
+
+const manifestoWords = manifestoCopy.split(" ");
+
+const workflowStoryStages = [
   {
     number: "01",
-    name: "Reads",
-    title: "It reads every lease.",
-    body: "Every PDF, rent roll, and email is parsed and structured automatically.",
-    points: ["Lease terms extracted", "Rent rolls reconciled", "Obligations surfaced"],
+    title: "Records",
+    description: "Ingest the complete tenancy",
+    copy: "Leases, amendments, rent rolls, notices, invoices, insurance certificates. They arrive as email attachments, PMS exports, scans, and ZIPs, scattered across four inboxes and someone's desktop. Brikli pulls all of it into one source-backed operating file per unit, parsed down to the page and the clause. One complete tenancy history instead of six partial ones.",
   },
   {
     number: "02",
-    name: "Decides",
-    title: "It knows every deadline.",
-    body: "Every event is tracked against the rules in your jurisdiction. No spreadsheet required.",
-    points: ["Renewal windows calculated", "Rent caps checked", "Timelines tracked"],
+    title: "Intelligence",
+    description: "Determine what is true",
+    copy: "Every field Brikli extracts (rent, deposit, term dates, escalation clauses, parking and utility terms) is tied to the exact page and line it came from. A value that can't be proven against the document stays empty and goes to review rather than getting guessed at. And when the lease and the rent roll disagree on what a unit actually pays, Brikli surfaces the conflict with both sources side by side instead of quietly picking one.",
   },
   {
     number: "03",
-    name: "Executes",
-    title: "It runs the workflow.",
-    body: "Notices, renewals, and filings are drafted correctly and sent from your account.",
-    points: ["Notices pre-filled", "Approvals kept human", "Audit trail logged"],
+    title: "Rules",
+    description: "Determine what can happen",
+    copy: "Rent-regulated work is jurisdiction-specific and changes by effective date. Brikli encodes Québec's RDL and Ontario's RTA as versioned rule packs, so lawful increase amounts, notice periods, deposit legality, and filing windows are calculated deterministically, not inferred by a model. Every result cites the rule and the version that produced it. Adding a province is a content change, not a rebuild.",
+  },
+  {
+    number: "04",
+    title: "Execution",
+    description: "Move the work forward",
+    copy: "Renewals, rent-increase notices, arrears letters, compliance document requests. Brikli drafts the actual output, fills it from verified fields, attaches the citations, and puts it in an approval queue. Nothing leaves the building without a human decision. Routine filing clears automatically, anything that touches a tenancy's legal standing waits for sign-off, and every action writes an audit trail.",
   },
 ];
 
@@ -37,7 +45,7 @@ const faqs = [
   {
     question: "How does Brikli know which notice to send?",
     answer:
-      "Brikli reads your lease terms and cross-references the residential tenancy requirements in your jurisdiction—from notice periods and forms to rent increase caps and eviction grounds. When a deadline approaches, the correct action is surfaced with a document pre-filled for your tenant.",
+      "Brikli reads your lease terms and cross-references the residential tenancy requirements in your jurisdiction, from notice periods and forms to permitted increase rules and eviction grounds. When a deadline approaches, the correct action is surfaced with a document pre-filled for your tenant.",
   },
   {
     question: "Can it handle rent increases and eviction notices?",
@@ -52,7 +60,12 @@ const faqs = [
   {
     question: "How long does setup take?",
     answer:
-      "An afternoon, not seven weeks. Drop in lease PDFs and rent rolls and Brikli builds the portfolio, maps deadlines, and surfaces active workflows automatically—without a drawn-out software migration.",
+      "See value from your first couple of properties in an afternoon. Start with a focused set of lease PDFs and rent rolls, and Brikli maps the governing facts, deadlines, and active workflows before expanding across the portfolio.",
+  },
+  {
+    question: "Why doesn’t Yardi just build this?",
+    answer:
+      "Property management systems are designed to record accounting and portfolio data. The controlling facts behind lease operations often live across agreements, amendments, notices, inboxes, and spreadsheets. Brikli reconciles that evidence and converts it into executable workflows.",
   },
 ];
 
@@ -69,6 +82,87 @@ function Logo({ light = false }: { light?: boolean }) {
   );
 }
 
+function AnimatedMetric({
+  value,
+  decimals = 0,
+  prefix = "",
+  suffix = "",
+  className,
+  enabled = true,
+}: {
+  value: number;
+  decimals?: number;
+  prefix?: string;
+  suffix?: string;
+  className?: string;
+  enabled?: boolean;
+}) {
+  const [displayValue, setDisplayValue] = useState(0);
+  const metricRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    const metric = metricRef.current;
+    if (!metric) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    let animationFrame = 0;
+    let hasAnimated = false;
+
+    const runAnimation = () => {
+      if (hasAnimated) return;
+      hasAnimated = true;
+
+      if (reducedMotion) {
+        setDisplayValue(value);
+        return;
+      }
+
+      const duration = 1900;
+      let startTime = 0;
+
+      const animate = (time: number) => {
+        if (!startTime) startTime = time;
+        const progress = Math.min((time - startTime) / duration, 1);
+        const easedProgress = 1 - Math.pow(1 - progress, 3);
+        setDisplayValue(value * easedProgress);
+
+        if (progress < 1) animationFrame = window.requestAnimationFrame(animate);
+      };
+
+      animationFrame = window.requestAnimationFrame(animate);
+    };
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          runAnimation();
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.35 },
+    );
+
+    observer.observe(metric);
+
+    return () => {
+      observer.disconnect();
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+    };
+  }, [enabled, value]);
+
+  return (
+    <strong
+      ref={metricRef}
+      className={className}
+      aria-label={`${prefix}${value.toFixed(decimals)}${suffix}`}
+    >
+      {prefix}{displayValue.toFixed(decimals)}{suffix}
+    </strong>
+  );
+}
+
 export default function Home() {
   const [loaded, setLoaded] = useState(false);
   const [introVisible, setIntroVisible] = useState(true);
@@ -79,6 +173,10 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [manifestoWordCount, setManifestoWordCount] = useState(0);
+  const [activeWorkflowStage, setActiveWorkflowStage] = useState(0);
+  const manifestoTrackRef = useRef<HTMLDivElement>(null);
+  const workflowStoryRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const loadTimer = window.setTimeout(() => setLoaded(true), 60);
@@ -118,6 +216,82 @@ export default function Home() {
       window.clearTimeout(introRemoveTimer);
       window.removeEventListener("scroll", onScroll);
       observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    let animationFrame = 0;
+
+    const updateWorkflowStage = () => {
+      animationFrame = 0;
+      const section = workflowStoryRef.current;
+      if (!section || window.innerWidth <= 780) return;
+
+      const rect = section.getBoundingClientRect();
+      const scrollDistance = Math.max(rect.height - window.innerHeight, 1);
+      const progress = Math.min(Math.max(-rect.top / scrollDistance, 0), 0.9999);
+      const nextStage = Math.floor(progress * workflowStoryStages.length);
+
+      setActiveWorkflowStage((current) => current === nextStage ? current : nextStage);
+    };
+
+    const requestUpdate = () => {
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(updateWorkflowStage);
+    };
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    requestUpdate();
+
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+    };
+  }, []);
+
+  useEffect(() => {
+    let animationFrame = 0;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+    const updateManifesto = () => {
+      animationFrame = 0;
+      const track = manifestoTrackRef.current;
+      if (!track) return;
+
+      if (reducedMotion.matches) {
+        setManifestoWordCount(manifestoWords.length);
+        return;
+      }
+
+      const rect = track.getBoundingClientRect();
+      const isCompact = window.innerWidth <= 640;
+      const scrollDistance = isCompact
+        ? window.innerHeight + rect.height
+        : Math.max(rect.height - window.innerHeight, 1);
+      const rawProgress = isCompact
+        ? (window.innerHeight - rect.top) / scrollDistance
+        : -rect.top / scrollDistance;
+      const progress = Math.min(Math.max(rawProgress / 0.98, 0), 1);
+      const openingWords = rawProgress >= 0 ? 0.04 : 0;
+      const visibleProgress = openingWords + progress * (1 - openingWords);
+      const nextCount = Math.ceil(visibleProgress * manifestoWords.length);
+
+      setManifestoWordCount((current) => current === nextCount ? current : nextCount);
+    };
+
+    const requestUpdate = () => {
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(updateManifesto);
+    };
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    requestUpdate();
+
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
     };
   }, []);
 
@@ -171,7 +345,7 @@ export default function Home() {
             <a href="#faq">FAQ</a>
           </nav>
           <div className="nav-actions">
-            <a className="nav-cta" href="#contact">Join the waitlist <Arrow /></a>
+            <a className="nav-cta" href="https://calendly.com/jonathan-brikli" target="_blank" rel="noreferrer">Book a demo <Arrow /></a>
             <button
               className={`menu-button ${menuOpen ? "menu-open" : ""}`}
               onClick={() => setMenuOpen(!menuOpen)}
@@ -207,9 +381,23 @@ export default function Home() {
         <div className="hero-wash" />
         <div className="container hero-content">
           <div className={`hero-copy ${loaded ? "hero-copy-in" : ""}`}>
-            <h1>Every lease.<br />Every deadline.<br /><em>Handled.</em></h1>
+            <h1>
+              <span className="hero-title-line">The AI execution</span>{" "}
+              <span className="hero-title-line">layer for real estate</span>{" "}
+              <span className="hero-title-line">operations.</span>
+            </h1>
             <p className="hero-deck">
-              Brikli ensures renewals, notices, and rent increases happen on time before gaps turn into lost revenue.
+              <span className="hero-automation-intro">Put Brikli to work by automating your</span>
+              <span className="hero-automation-window" aria-hidden="true">
+                <span className="hero-automation-track">
+                  <span>leases</span>
+                  <span>rent rolls</span>
+                  <span>renewals</span>
+                  <span>maintenance</span>
+                  <span>leases</span>
+                </span>
+              </span>
+              <span className="hero-automation-accessible"> leases, rent rolls, renewals, and maintenance.</span>
             </p>
             <div className="hero-actions">
               <a className="button button-paper" href="https://calendly.com/jonathan-brikli" target="_blank" rel="noreferrer">
@@ -219,173 +407,148 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <a href="#platform" className="scroll-cue" aria-label="Scroll to discover">
-          <span>Scroll to discover</span><i />
-        </a>
       </section>
 
-      <section className="manifesto section" id="platform">
-        <div className="container manifesto-grid">
-          <div>
-            <h2 className="display-heading muted-reveal">
-              Your portfolio should run on intelligence, <em>not institutional memory.</em>
-            </h2>
-            <div className="manifesto-copy">
-              <p>Revenue is rarely lost all at once. It slips through a renewal sent late, a notice drafted wrong, or a turnover that sat too long.</p>
-              <p>Brikli turns the documents you already have into a living system of tenants, timelines, and revenue actions—before your team has to chase them.</p>
-            </div>
-          </div>
-
-          <div className="lease-art" aria-hidden="true" data-reveal>
-            <div className="lease-paper">
-              <div className="lease-paper-head"><Logo /><span>LEASE / 00142</span></div>
-              <p>1250 Pine Street</p>
-              <h3>Unit 412</h3>
-              <div className="paper-lines"><i /><i /><i /><i /></div>
-              <div className="paper-event"><span>42</span><p>days until<br />renewal window</p></div>
-              <div className="paper-status"><i /> All terms extracted</div>
-            </div>
-          </div>
-        </div>
-
-        <div className="container principles">
-          {[
-            ["01", "Revenue before leakage", "Every lease event is surfaced early enough to act—so an avoidable gap never becomes a line item."],
-            ["02", "Judgment stays human", "Brikli does the reading and drafting. Your operators keep the final say on what leaves the account."],
-            ["03", "Compliance built in", "The right jurisdiction, timeline, form, and rent cap are applied to every workflow automatically."],
-            ["04", "Every action, accountable", "A complete audit trail follows every notice, approval, edit, and send across the portfolio."],
-          ].map(([number, title, copy], index) => (
-            <article className="principle" data-reveal key={number} style={{ "--delay": `${index * 220}ms` } as React.CSSProperties}>
-              <span className="principle-number">{number}</span>
-              <h3>{title}</h3>
-              <p>{copy}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="photo-break">
-        <div className="photo-frame" data-reveal>
-          <Image
-            src="/output-image (1).png"
-            alt="Painted atrium of a refined multifamily residence"
-            fill
-            sizes="100vw"
-          />
-          <div className="photo-overlay" />
-          <div className="photo-copy">
-            <h2>Infrastructure for the<br /><em>modern portfolio.</em></h2>
-            <p>Built alongside the teams responsible for keeping buildings occupied, compliant, and growing.</p>
-          </div>
-        </div>
-      </section>
-
-      <section className="engine section-dark" id="how-it-works">
+      <section className="hero-green-band" aria-label="Customer trust">
         <div className="container">
-          <div className="section-intro dark-intro" data-reveal>
-            <h2>One platform.<br /><em>Every lease workflow.</em></h2>
-            <p>Brikli reads what happened, knows what comes next, and prepares the action your team needs to take.</p>
+          <p>Trusted by leading <br />owners and operators</p>
+        </div>
+      </section>
+
+      <section className="manifesto" id="platform">
+        <div className="manifesto-track" ref={manifestoTrackRef}>
+          <div className="manifesto-sticky">
+            <h2 className="manifesto-statement" aria-label={manifestoCopy}>
+              {manifestoWords.map((word, index) => (
+                <span
+                  aria-hidden="true"
+                  className={`manifesto-word ${index < manifestoWordCount || (index >= manifestoWords.length - 4 && manifestoWordCount > manifestoWords.length - 4) ? "manifesto-word-active" : ""} ${index >= manifestoWords.length - 4 ? "manifesto-word-accent" : ""}`}
+                  key={`${word}-${index}`}
+                >
+                  {word}
+                </span>
+              ))}
+            </h2>
+
+            <aside className="manifesto-impact" aria-label="Revenue impact metrics">
+              <span className="impact-kicker">Revenue impact</span>
+              <AnimatedMetric className="impact-total" value={389} prefix="$" suffix="M+" enabled={!introVisible} />
+              <div className="impact-details">
+                <div>
+                  <AnimatedMetric value={7.3} decimals={1} suffix="B" enabled={!introVisible} />
+                  <span>In increased asset valuation</span>
+                </div>
+                <div>
+                  <AnimatedMetric value={15} suffix="M+" enabled={!introVisible} />
+                  <span>Audits performed</span>
+                </div>
+              </div>
+            </aside>
           </div>
+        </div>
 
-          <div className="engine-layout">
-            <div className="stage-visual-grid">
-              <div className="stage-visual stage-visual-reads" data-reveal>
-                <Image
-                  src="/brikli-lease-scanner.svg"
-                  alt="Brikli scanning documents from a lease library"
-                  width={688}
-                  height={500}
-                />
-              </div>
-              <div className="stage-visual stage-visual-deadlines" data-reveal>
-                <Image
-                  src="/brikli-deadline-intelligence.svg"
-                  alt="Brikli checking lease records against a deadline"
-                  width={640}
-                  height={498}
-                />
-              </div>
-              <div className="stage-visual stage-visual-executes" data-reveal>
-                <Image
-                  src="/brikli-workflow-execution.png"
-                  alt="Brikli moving a lease workflow from preparation through approval to completion"
-                  width={1470}
-                  height={1070}
-                />
-              </div>
-            </div>
+        <div className="principles-spacer" aria-hidden="true" />
+      </section>
 
-            <div className="stage-list" role="list" aria-label="Lease workflow stages">
-              {stages.map((stage) => (
-                <div
+      <section className="workflow-story" ref={workflowStoryRef} aria-label="How Brikli processes real estate operations">
+        <div className="workflow-story-sticky">
+          <div className="container workflow-story-layout">
+            <div className="workflow-story-cards" role="list" aria-label="Brikli workflow stages">
+              {workflowStoryStages.map((stage, index) => (
+                <article
+                  className={`workflow-story-card ${index === activeWorkflowStage ? "workflow-story-card-active" : ""}`}
                   key={stage.number}
-                  className="stage-button stage-active"
                   role="listitem"
+                  aria-current={index === activeWorkflowStage ? "step" : undefined}
                 >
                   <span>{stage.number}</span>
-                  <div><small>{stage.name}</small><strong>{stage.title}</strong></div>
-                  <i />
-                </div>
+                  <div>
+                    <div className="workflow-story-card-heading">
+                      <h3>{stage.title}</h3>
+                      <p className="workflow-story-card-description">{stage.description}</p>
+                    </div>
+                    <p className="workflow-story-card-copy">{stage.copy}</p>
+                  </div>
+                </article>
               ))}
             </div>
           </div>
         </div>
       </section>
 
-      <section className="setup section" id="why-brikli">
+      <section className="engine section-dark" id="how-it-works">
         <div className="container">
-          <div className="section-intro" data-reveal>
-            <h2>Drop your leases. <em>Portfolio mapped instantly.</em></h2>
-            <p>Brikli turns the files sitting in your inbox and drives into a live portfolio—with every tenant, timeline, and action already in place.</p>
-          </div>
-
-          <div className="setup-visual" data-reveal>
-            <div className="upload-zone">
-              <div className="upload-icon"><span>↑</span></div>
-              <small>YOUR DOCUMENTS</small>
-              <h3>Drop files to build your portfolio</h3>
-              <p>Leases · rent rolls · notices · emails</p>
-              <div className="file-chips">
-                <span><b>XLSX</b> Portfolio rent roll</span>
-                <span><b>PDF</b> Residential lease</span>
-                <span><b>PDF</b> N1 notice</span>
-              </div>
+          <div className="engine-layout">
+            <div className="workflow-demo" data-reveal>
+              <h3>Drop your leases. <em>Portfolio mapped instantly.</em></h3>
+              <p>Brikli turns the files sitting in your inbox and drives into a live portfolio, with every tenant, timeline, and action already in place.</p>
+              <video
+                className="workflow-demo-video"
+                src="/our-workflows-demo.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                disablePictureInPicture
+                controlsList="nodownload noplaybackrate noremoteplayback"
+                preload="metadata"
+              >
+                Your browser does not support embedded video.
+              </video>
             </div>
-            <div className="process-arrow"><span></span><i>→</i></div>
-            <div className="portfolio-result">
-              <h3>Oakwood Residential</h3>
-              <div className="result-stats">
-                <div><strong>1520</strong><small>LEASES</small></div>
-                <div><strong>96</strong><small>UPCOMING</small></div>
-                <div><strong>50</strong><small>ACTIONS</small></div>
-              </div>
-              <div className="event-row"><span>N1</span><p>Rent increase · Unit 412<small>Ready to review</small></p><b>Today</b></div>
-              <div className="event-row"><span>R</span><p>Renewal · Unit 7B<small>Window opens</small></p><b>3 days</b></div>
-              <div className="event-row"><span>N4</span><p>Non-payment · Unit 3F<small>Draft prepared</small></p><b>5 days</b></div>
-            </div>
-          </div>
 
+            <div className="workflow-demo" data-reveal>
+              <h3>Ask a question. Get the answer and the page it came from.</h3>
+              <p>Every rent, deposit, deadline, and clause across your buildings is one plain-English question away, and Brikli answers from your own documents with the file, page, and line attached, so you can check the work before you act on it.</p>
+              <video
+                className="workflow-demo-video"
+                src="/question-answer-demo.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                disablePictureInPicture
+                controlsList="nodownload noplaybackrate noremoteplayback"
+                preload="metadata"
+              >
+                Your browser does not support embedded video.
+              </video>
+            </div>
+
+          </div>
         </div>
       </section>
 
-      <section className="trust section">
-        <div className="container trust-layout">
-          <div className="trust-copy" data-reveal>
-            <h2>Built to the standards your portfolio demands.</h2>
-            <p>Brikli reads leases and property records to run workflows, never to replace your judgment. Your team controls approvals, and every action stays visible.</p>
-          </div>
-          <div className="standards-list" data-reveal>
-            {[
-              ["Human approval", "Nothing leaves your account until your team says so."],
-              ["Jurisdiction aware", "Rules, timelines, and forms are matched to every property."],
-              ["Complete audit trail", "Every source, edit, approval, and send is recorded."],
-            ].map(([title, copy]) => (
-              <article className="standard-row" key={title}>
-                <div><h3>{title}</h3><p>{copy}</p></div>
-              </article>
-            ))}
-            <a href="mailto:support@brikli.com">Talk to us about security <span aria-hidden="true">↗</span></a>
-          </div>
+      <section className="jurisdiction-feature" id="why-brikli" aria-labelledby="jurisdiction-heading">
+        <div className="jurisdiction-feature-image" data-reveal>
+          <Image
+            src="/output-image (3).png"
+            alt="A city skyline representing the jurisdictions where property teams operate"
+            fill
+            sizes="(max-width: 780px) 100vw, 50vw"
+          />
+        </div>
+        <div className="feature-copy" data-reveal>
+          <h2 id="jurisdiction-heading">Built for the rules<br />that govern every property.</h2>
+          <p>Brikli matches each property to its jurisdiction, effective rules, required timelines, and current forms. Every workflow stays compliant from decision to delivery.</p>
+        </div>
+      </section>
+
+      <section className="security-feature" aria-labelledby="security-heading">
+        <div className="feature-copy security-feature-copy" data-reveal>
+          <h2 id="security-heading">Built on trust<br />and security.</h2>
+          <p>Built with enterprise-grade security so you never have to think twice about privacy, ownership, or control. Encrypted at rest and in transit.</p>
+          <a href="mailto:support@brikli.com">
+            Talk to us about security <span aria-hidden="true">↗</span>
+          </a>
+        </div>
+        <div className="security-feature-image" data-reveal>
+          <Image
+            src="/output-image (1).png"
+            alt="Warm, refined interior of a multifamily residence"
+            fill
+            sizes="(max-width: 780px) 100vw, 50vw"
+          />
         </div>
       </section>
 
@@ -411,18 +574,13 @@ export default function Home() {
         <div className="container contact-grid">
           <div className="contact-copy" data-reveal>
             <h2>Put every lease<br /><em>to work.</em></h2>
-            <p>Join Canadian multifamily operators building a portfolio that acts before revenue slips away.</p>
-            <ul>
-              <li><i /> Founding pricing locked for year one</li>
-              <li><i /> Live in an afternoon</li>
-              <li><i /> We respond within 24 hours</li>
-            </ul>
+            <p>Revenue-critical operational infrastructure for Canadian multifamily teams managing complex lease obligations.</p>
           </div>
           <div className="contact-form-wrap" data-reveal>
             {submitted ? (
               <div className="success-message">
                 <span>✓</span>
-                <h3>Thanks. We&apos;ll be in touch within 24 hours.</h3>
+                <h3>Thanks. We&apos;ll be in touch.</h3>
                 <button onClick={() => setSubmitted(false)}>Send another inquiry</button>
               </div>
             ) : (
@@ -444,7 +602,7 @@ export default function Home() {
                 </label>
                 {submitError && <p className="form-error" role="alert">{submitError}</p>}
                 <button className="button button-forest" type="submit" disabled={submitting}>
-                  {submitting ? "Sending…" : "Join the waitlist"} {!submitting && <Arrow />}
+                  {submitting ? "Sending…" : "Send inquiry"} {!submitting && <Arrow />}
                 </button>
                 <small>By submitting, you agree to be contacted about Brikli.</small>
               </form>
@@ -455,12 +613,17 @@ export default function Home() {
 
       <footer className="site-footer" id="footer">
         <div className="footer-fade" />
-        <div className="container footer-main">
-          <div className="footer-intro">
-            <p>Lease intelligence for modern multifamily operators.</p>
-            <a className="footer-demo" href="https://calendly.com/jonathan-brikli" target="_blank" rel="noreferrer">
-              Book a demo <Arrow />
-            </a>
+        <div className="container footer-showcase">
+          <div className="footer-lockup" role="img" aria-label="Brikli">
+            <span aria-hidden="true">Brikli</span>
+            <div className="footer-mark" aria-hidden="true">
+              <Image
+                src="/brikli.svg"
+                alt=""
+                width={225}
+                height={225}
+              />
+            </div>
           </div>
           <nav className="footer-links" aria-label="Footer navigation">
             <div>
@@ -477,22 +640,13 @@ export default function Home() {
             </div>
           </nav>
         </div>
-        <div className="container footer-showcase">
-          <div className="footer-lockup" role="img" aria-label="Brikli">
-            <span aria-hidden="true">Brikli</span>
-            <div className="footer-mark" aria-hidden="true">
-              <Image
-                src="/brikli.svg"
-                alt=""
-                width={225}
-                height={225}
-              />
-            </div>
-          </div>
-        </div>
         <div className="container footer-bottom">
           <span>© 2026 Brikli. All rights reserved.</span>
-          <a href="mailto:support@brikli.com">support@brikli.com</a>
+          <nav aria-label="Legal and support">
+            <a href="/privacy">Privacy Policy</a>
+            <a href="/terms">Terms of Use</a>
+            <a href="mailto:support@brikli.com">support@brikli.com</a>
+          </nav>
         </div>
       </footer>
 
