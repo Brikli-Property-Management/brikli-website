@@ -3,38 +3,12 @@
 import Image from "next/image";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { BloomMark } from "./components/BloomMark";
+import { PlatformSection } from "@/components/platform/PlatformSection";
 
 const manifestoCopy =
   "Brikli turns leases, rent rolls, and property records into compliant renewals, rent increases, and notices on the right provincial form and timeline. Every action is logged for audit, so your team can focus on decisions, not deadlines.";
 
 const manifestoWords = manifestoCopy.split(" ");
-
-const workflowStoryStages = [
-  {
-    number: "01",
-    title: "Records",
-    description: "Ingest the complete tenancy",
-    copy: "Leases, amendments, rent rolls, notices, invoices, insurance certificates. They arrive as email attachments, PMS exports, scans, and ZIPs, scattered across four inboxes and someone's desktop. Brikli pulls all of it into one source-backed operating file per unit, parsed down to the page and the clause. One complete tenancy history instead of six partial ones.",
-  },
-  {
-    number: "02",
-    title: "Intelligence",
-    description: "Determine what is true",
-    copy: "Every field Brikli extracts (rent, deposit, term dates, escalation clauses, parking and utility terms) is tied to the exact page and line it came from. A value that can't be proven against the document stays empty and goes to review rather than getting guessed at. And when the lease and the rent roll disagree on what a unit actually pays, Brikli surfaces the conflict with both sources side by side instead of quietly picking one.",
-  },
-  {
-    number: "03",
-    title: "Rules",
-    description: "Determine what can happen",
-    copy: "Rent-regulated work is jurisdiction-specific and changes by effective date. Brikli encodes Québec's RDL and Ontario's RTA as versioned rule packs, so lawful increase amounts, notice periods, deposit legality, and filing windows are calculated deterministically, not inferred by a model. Every result cites the rule and the version that produced it. Adding a province is a content change, not a rebuild.",
-  },
-  {
-    number: "04",
-    title: "Execution",
-    description: "Move the work forward",
-    copy: "Renewals, rent-increase notices, arrears letters, compliance document requests. Brikli drafts the actual output, fills it from verified fields, attaches the citations, and puts it in an approval queue. Nothing leaves the building without a human decision. Routine filing clears automatically, anything that touches a tenancy's legal standing waits for sign-off, and every action writes an audit trail.",
-  },
-];
 
 const faqs = [
   {
@@ -174,9 +148,7 @@ export default function Home() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [manifestoWordCount, setManifestoWordCount] = useState(0);
-  const [activeWorkflowStage, setActiveWorkflowStage] = useState(0);
   const manifestoTrackRef = useRef<HTMLDivElement>(null);
-  const workflowStoryRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const loadTimer = window.setTimeout(() => setLoaded(true), 60);
@@ -216,37 +188,6 @@ export default function Home() {
       window.clearTimeout(introRemoveTimer);
       window.removeEventListener("scroll", onScroll);
       observer.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    let animationFrame = 0;
-
-    const updateWorkflowStage = () => {
-      animationFrame = 0;
-      const section = workflowStoryRef.current;
-      if (!section || window.innerWidth <= 780) return;
-
-      const rect = section.getBoundingClientRect();
-      const scrollDistance = Math.max(rect.height - window.innerHeight, 1);
-      const progress = Math.min(Math.max(-rect.top / scrollDistance, 0), 0.9999);
-      const nextStage = Math.floor(progress * workflowStoryStages.length);
-
-      setActiveWorkflowStage((current) => current === nextStage ? current : nextStage);
-    };
-
-    const requestUpdate = () => {
-      if (!animationFrame) animationFrame = window.requestAnimationFrame(updateWorkflowStage);
-    };
-
-    window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
-    requestUpdate();
-
-    return () => {
-      window.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("resize", requestUpdate);
-      if (animationFrame) window.cancelAnimationFrame(animationFrame);
     };
   }, []);
 
@@ -450,31 +391,7 @@ export default function Home() {
         <div className="principles-spacer" aria-hidden="true" />
       </section>
 
-      <section className="workflow-story" ref={workflowStoryRef} aria-label="How Brikli processes real estate operations">
-        <div className="workflow-story-sticky">
-          <div className="container workflow-story-layout">
-            <div className="workflow-story-cards" role="list" aria-label="Brikli workflow stages">
-              {workflowStoryStages.map((stage, index) => (
-                <article
-                  className={`workflow-story-card ${index === activeWorkflowStage ? "workflow-story-card-active" : ""}`}
-                  key={stage.number}
-                  role="listitem"
-                  aria-current={index === activeWorkflowStage ? "step" : undefined}
-                >
-                  <span>{stage.number}</span>
-                  <div>
-                    <div className="workflow-story-card-heading">
-                      <h3>{stage.title}</h3>
-                      <p className="workflow-story-card-description">{stage.description}</p>
-                    </div>
-                    <p className="workflow-story-card-copy">{stage.copy}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
+      <PlatformSection />
 
       <section className="engine section-dark" id="how-it-works">
         <div className="container">
