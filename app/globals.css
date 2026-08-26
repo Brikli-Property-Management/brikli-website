@@ -1,3 +1,6 @@
+@import "tailwindcss";
+@source "../components/platform/**/*.{ts,tsx}";
+
 :root {
   --paper: #f4f1e8;
   --paper-deep: #eae5d8;
