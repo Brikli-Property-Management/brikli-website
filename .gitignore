@@ -5,6 +5,7 @@
 
 # next.js
 /.next/
+/.next-*/
 /out/
 
 # production
@@ -12,6 +13,7 @@
 
 # local
 .DS_Store
+.cursor/
 *.pem
 .env*
 !.env.example

@@ -1,0 +1,30 @@
+/** Warm creamy palette for the product workflow demo — matches portfolio Brikli UI. */
+export const productTheme = {
+  bg: "#FAF9F6",
+  bgNav: "#F4F4F2",
+  surface: "#FFFFFF",
+  border: "#EFEFED",
+  borderStrong: "#E0E0DE",
+  borderMuted: "#EBEBEB",
+  text: "#0F291E",
+  textMuted: "#0F291E",
+  textSubtle: "#0F291E",
+  accent: "#0F291E",
+  accentMuted: "#1D3B23",
+  progressTrack: "#E8E8E6",
+  progressFill: "#0F291E",
+  activeNavBg: "rgba(255, 255, 255, 0.95)",
+  activeIndicator: "#0F291E",
+  verified: "#1D3B23",
+  verifiedText: "#0F291E",
+  controls: "#0F291E",
+  controlsBg: "#F5EDE4",
+  controlsBorder: "#E8D5C4",
+  stale: "#0F291E",
+  staleBg: "#F5EBE8",
+  staleBorder: "#E8D0CA",
+  peach: "#F5E8D6",
+  highlight: "#0F291E",
+} as const;
+
+export const BRIKLI_GREEN = productTheme.accent;

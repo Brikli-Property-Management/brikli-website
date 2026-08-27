@@ -4,14 +4,23 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:documents": "DEMO_MODE=documents next dev -p 4000 -H 127.0.0.1",
+    "dev:product": "DEMO_MODE=ask next dev -p 4001 -H 127.0.0.1",
+    "dev:portfolio": "DEMO_MODE=portfolio next dev -p 4002 -H 127.0.0.1",
+    "dev:platform": "DEMO_MODE=platform next dev -p 4003 -H 127.0.0.1",
+    "dev:all": "npm run dev:documents & npm run dev:product & npm run dev:portfolio & npm run dev:platform",
     "build": "next build",
+    "build:documents": "DEMO_MODE=documents next build",
     "start": "next start",
+    "record:documents": "node scripts/record-documents-demo.mjs",
+    "record:documents:fast": "node scripts/record-documents-demo.mjs --skip-build",
     "lint": "eslint ."
   },
   "dependencies": {
     "gsap": "^3.13.0",
     "lottie-react": "^2.4.1",
-    "next": "16.2.12",
+    "lucide-react": "^0.511.0",
+    "next": "16.3.2",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
@@ -21,7 +30,8 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "eslint": "^9.0.0",
-    "eslint-config-next": "16.2.12",
+    "eslint-config-next": "16.3.2",
+    "playwright": "^1.55.0",
     "tailwindcss": "^4",
     "typescript": "^5.9.0"
   },
