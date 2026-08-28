@@ -131,7 +131,7 @@ export function PortfolioEligibility({ isActive, reducedMotion }: PlatformSceneP
         ))}
       </div>
 
-      <div className="portfolio-tenancies mt-3 grid min-h-0 flex-1 grid-rows-[auto_repeat(5,minmax(0,1fr))] gap-1 overflow-hidden">
+      <div className="portfolio-tenancies mt-3 grid min-h-0 flex-1 grid-rows-[auto_repeat(5,minmax(28px,1fr))] gap-1 overflow-hidden">
         <p className="text-[8px] font-medium uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
           Blocked tenancies
         </p>
@@ -140,7 +140,7 @@ export function PortfolioEligibility({ isActive, reducedMotion }: PlatformSceneP
             key={t.unit}
             data-tenancy-row
             data-reveal
-            className="flex min-h-0 items-center justify-between gap-2 border px-1.5 py-0.5"
+            className="flex min-h-[28px] items-center justify-between gap-2 overflow-hidden border px-1.5 py-0.5"
             style={{ borderColor: platformTheme.border }}
           >
             <div className="min-w-0">

@@ -50,11 +50,18 @@ export function useSceneAnimation(
     const resizeObserver = new ResizeObserver(() => {
       if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
       resizeFrame = requestAnimationFrame(() => {
+        const previousTimeline = tlRef.current;
+        const progress = previousTimeline?.progress() ?? 0;
+        const wasPaused = previousTimeline?.paused() ?? false;
         killPlatformTimelines(tlRef.current);
         tlRef.current = null;
 
         const resizedTimeline = buildTimeline(root);
-        if (resizedTimeline) tlRef.current = resizedTimeline;
+        if (resizedTimeline) {
+          resizedTimeline.progress(progress);
+          if (!wasPaused) resizedTimeline.play();
+          tlRef.current = resizedTimeline;
+        }
         resizeFrame = null;
       });
     });

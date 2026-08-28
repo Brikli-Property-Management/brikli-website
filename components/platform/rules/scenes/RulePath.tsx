@@ -49,7 +49,7 @@ export function RulePath({ isActive, reducedMotion }: PlatformSceneProps) {
       <p className="mb-2 self-start text-[10px] font-medium uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
         Rule path
       </p>
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-1">
+      <div className="flex min-h-0 flex-1 flex-col items-center justify-start gap-1 pt-6">
         {RULE_PATH.map((step, i) => (
           <div key={step} className="flex flex-col items-center">
             <div
@@ -69,7 +69,7 @@ export function RulePath({ isActive, reducedMotion }: PlatformSceneProps) {
       <div
         data-result
         data-reveal
-        className="relative -top-8 mb-2 mt-3 shrink-0 rounded-md border px-5 py-2 text-sm font-semibold"
+        className="mb-2 mt-3 shrink-0 rounded-md border px-5 py-2 text-sm font-semibold"
         style={{ borderColor: platformTheme.accentGreen, background: platformTheme.accentTint, color: platformTheme.accentGreen, opacity: reducedMotion ? 1 : 0 }}
       >
         {RULE_PATH_RESULT}
