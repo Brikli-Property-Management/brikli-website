@@ -736,6 +736,11 @@ a:hover .arrow-diagonal { transform: rotate(-45deg) translateX(4px); }
   border-radius: 0 !important;
 }
 
+/* Keep platform animations on the same hover surface as their captions. */
+[data-platform-viz] [data-scene] {
+  background: transparent !important;
+}
+
 .record-tree-list {
   display: grid;
   min-height: 0;

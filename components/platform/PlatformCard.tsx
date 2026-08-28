@@ -47,7 +47,7 @@ export function PlatformCard({
           aspectRatio: PLATFORM_VIZ_VIEWPORT.aspectRatio,
           minHeight: PLATFORM_VIZ_VIEWPORT.minHeightPx,
           maxHeight: PLATFORM_VIZ_VIEWPORT.maxHeightPx,
-          background: "transparent",
+          background: isHovered ? PLATFORM_HOVER_GRADIENT : platformTheme.vizBg,
         }}
         data-platform-viz
       >
@@ -66,7 +66,7 @@ export function PlatformCard({
       </div>
 
       {/* Divider */}
-      <div className="h-px w-full" style={{ background: platformTheme.divider }} />
+      <div className="h-px w-full" style={{ background: "transparent" }} />
 
       {/* TITLE / DESCRIPTION — stable, does not animate */}
       <div className="flex flex-col gap-2 px-5 py-4 md:px-6 md:py-5">
