@@ -210,6 +210,25 @@ export default function Home() {
     );
 
     document.querySelectorAll("[data-reveal]").forEach((node) => observer.observe(node));
+
+    // Warm videos shortly before they enter view so playback starts quickly
+    // without forcing the large files into the initial page load.
+    const videoObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const video = entry.target as HTMLVideoElement;
+          video.preload = "auto";
+          video.load();
+          videoObserver.unobserve(video);
+        });
+      },
+      { rootMargin: "800px 0px" },
+    );
+    document.querySelectorAll<HTMLVideoElement>(".workflow-demo-video").forEach((video) => {
+      videoObserver.observe(video);
+    });
+
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
 
@@ -219,6 +238,7 @@ export default function Home() {
       window.clearTimeout(introRemoveTimer);
       window.removeEventListener("scroll", onScroll);
       observer.disconnect();
+      videoObserver.disconnect();
     };
   }, []);
 

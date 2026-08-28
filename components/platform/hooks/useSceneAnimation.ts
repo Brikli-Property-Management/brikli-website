@@ -43,7 +43,26 @@ export function useSceneAnimation(
       tlRef.current = tl;
     }
 
+    // Browser zoom and responsive layout can change the scene's measured
+    // dimensions without remounting it. Rebuild active scenes so animations
+    // that measure DOM positions (for example, workflow cards) stay aligned.
+    let resizeFrame: number | null = null;
+    const resizeObserver = new ResizeObserver(() => {
+      if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => {
+        killPlatformTimelines(tlRef.current);
+        tlRef.current = null;
+
+        const resizedTimeline = buildTimeline(root);
+        if (resizedTimeline) tlRef.current = resizedTimeline;
+        resizeFrame = null;
+      });
+    });
+    resizeObserver.observe(root);
+
     return () => {
+      resizeObserver.disconnect();
+      if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
       killPlatformTimelines(tlRef.current);
       tlRef.current = null;
     };
