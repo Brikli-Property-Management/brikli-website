@@ -20,7 +20,7 @@ export function AuditTrail({ isActive, reducedMotion }: PlatformSceneProps) {
     gsap.set(q(root, "[data-footer]"), { opacity: 0, y: 4 });
 
     entries.forEach((entry, i) => {
-      tl.to(entry, { opacity: 1, x: 0, duration: PLATFORM_INTERACTION.rowReveal, ease: PLATFORM_EASE.out }, i * 0.22);
+      tl.to(entry, { opacity: 1, x: 0, duration: PLATFORM_INTERACTION.rowReveal, ease: PLATFORM_EASE.out }, i * 0.14);
     });
 
     tl.to(q(root, "[data-footer]"), { opacity: 1, y: 0, duration: 0.3, ease: PLATFORM_EASE.out }, "-=0.1");
@@ -37,6 +37,22 @@ export function AuditTrail({ isActive, reducedMotion }: PlatformSceneProps) {
       <p className="mb-2 text-[10px] font-medium uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
         Audit trail
       </p>
+      <div className="mb-3 grid grid-cols-3 gap-1.5">
+        {[
+          ["22", "actions"],
+          ["22", "verified"],
+          ["0", "exceptions"],
+        ].map(([value, label]) => (
+          <div
+            key={label}
+            className="rounded border px-2 py-1.5"
+            style={{ borderColor: platformTheme.border, background: "rgba(255,255,255,.32)" }}
+          >
+            <p className="text-sm font-semibold leading-none" style={{ color: platformTheme.text }}>{value}</p>
+            <p className="mt-1 text-[8px] uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>{label}</p>
+          </div>
+        ))}
+      </div>
       <div className="flex-1 space-y-1">
         {AUDIT_TRAIL.map((entry) => (
           <div key={`${entry.time}-${entry.event}`} data-audit data-reveal className="flex gap-2.5 border-b pb-1" style={{ borderColor: platformTheme.border }}>

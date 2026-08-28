@@ -70,7 +70,7 @@ export function addSceneCrossfade(
 
     const inner = gsap.timeline();
     inner.to(outEl, { opacity: 0, y: exitY, duration, ease }, 0);
-    inner.to(inEl, { opacity: 1, y: 0, duration, ease }, 0);
+    inner.to(inEl, { opacity: 1, y: 0, duration, ease });
     inner.call(() => {
       gsap.set(outEl, { pointerEvents: "none" });
       gsap.set(inEl, { pointerEvents: "auto" });
@@ -229,7 +229,7 @@ export function addSceneRotationStep(
     inner.to(current, {
       opacity: 0,
       y: PLATFORM_TRANSITION.exitY,
-      duration: PLATFORM_TRANSITION.durationSec,
+      duration: PLATFORM_TRANSITION.durationSec * 0.55,
       ease: PLATFORM_EASE.smooth,
     });
     inner.fromTo(
@@ -238,10 +238,9 @@ export function addSceneRotationStep(
       {
         opacity: 1,
         y: 0,
-        duration: PLATFORM_TRANSITION.durationSec,
+        duration: PLATFORM_TRANSITION.durationSec * 0.55,
         ease: PLATFORM_EASE.smooth,
       },
-      0,
     );
     inner.call(() => {
       activeIndex.current = nextIndex;

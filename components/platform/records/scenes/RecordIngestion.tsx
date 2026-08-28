@@ -31,7 +31,6 @@ export function RecordIngestion({ isActive, reducedMotion }: PlatformSceneProps)
     gsap.set(steps, { opacity: 0.22, color: platformTheme.textSubtle });
     gsap.set(connectors, { scaleY: 0, transformOrigin: "top center" });
     gsap.set(q(root, "[data-status]"), { opacity: 0, y: 5 });
-    gsap.set(q(root, "[data-status-dot]"), { scale: 0 });
 
     docs.forEach((doc, i) => {
       const origin = doc.dataset.origin ?? "left";
@@ -66,7 +65,6 @@ export function RecordIngestion({ isActive, reducedMotion }: PlatformSceneProps)
       }
     });
 
-    tl.to(q(root, "[data-status-dot]"), { scale: 1, duration: 0.2, ease: "back.out(1.4)" }, "-=0.05");
     tl.to(q(root, "[data-status]"), { opacity: 1, y: 0, duration: 0.26, ease: PLATFORM_EASE.out }, "-=0.12");
 
     return tl;
@@ -83,8 +81,8 @@ export function RecordIngestion({ isActive, reducedMotion }: PlatformSceneProps)
         Document upload
       </p>
       <div
-        className="mb-2 flex min-h-0 flex-1 flex-col rounded-md border border-dashed p-2"
-        style={{ borderColor: platformTheme.border, background: platformTheme.placeholderBg }}
+        className="mb-2 flex min-h-0 flex-1 flex-col border border-dashed p-2"
+        style={{ borderColor: platformTheme.border, background: "#F4F1E8" }}
       >
         <div className="grid grid-cols-3 gap-1">
           {INGESTION_DOCUMENTS.map((doc) => (
@@ -105,8 +103,8 @@ export function RecordIngestion({ isActive, reducedMotion }: PlatformSceneProps)
             </div>
           ))}
         </div>
-        <div className="mt-2 min-h-0 flex-1 space-y-0.5 overflow-hidden">
-          <p className="text-[7px] font-medium uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
+        <div className="relative -top-5 mt-2 grid min-h-0 flex-1 grid-rows-[auto_repeat(5,minmax(26px,1fr))] gap-1 overflow-hidden">
+          <p className="relative top-5 text-[7px] font-medium uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
             Property matches
           </p>
           {INGESTION_MATCHES.map((match) => (
@@ -114,7 +112,7 @@ export function RecordIngestion({ isActive, reducedMotion }: PlatformSceneProps)
               key={match.doc}
               data-match
               data-reveal
-              className="flex items-center justify-between gap-1 rounded border bg-white px-1.5 py-0.5"
+              className="flex min-h-0 items-center justify-between gap-1 border bg-white px-1.5 py-0.5"
               style={{ borderColor: platformTheme.border }}
             >
               <div className="min-w-0">
@@ -155,12 +153,6 @@ export function RecordIngestion({ isActive, reducedMotion }: PlatformSceneProps)
         ))}
       </div>
       <div className="mt-1.5 flex shrink-0 items-center justify-center gap-1.5">
-        <span
-          data-status-dot
-          data-reveal
-          className="inline-block h-1.5 w-1.5 rounded-full"
-          style={{ background: platformTheme.accentGreen }}
-        />
         <p
           data-status
           data-reveal

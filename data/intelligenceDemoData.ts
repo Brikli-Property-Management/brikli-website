@@ -13,14 +13,16 @@ export const VERIFIED_RENT = {
 
 export const LEASE_EXPIRY = {
   title: "Leases expiring",
-  period: "Next 90 days",
-  total: 24,
-  needAction: 9,
+  period: "Next 5 months",
+  total: 37,
+  needAction: 13,
   exposed: "$22.8K/mo exposed",
   months: [
+    { month: "Aug", count: 6 },
     { month: "Sep", count: 4 },
     { month: "Oct", count: 11 },
     { month: "Nov", count: 9 },
+    { month: "Dec", count: 7 },
   ],
 } as const;
 

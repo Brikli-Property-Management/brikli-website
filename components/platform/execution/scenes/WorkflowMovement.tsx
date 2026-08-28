@@ -10,6 +10,7 @@ import { WORKFLOW_COLUMNS, WORKFLOW_ROWS } from "@/data/executionDemoData";
 import { cn } from "@/lib/utils";
 
 const LEG_DURATION = 0.34;
+const ROW_STAGGER = 0.28;
 
 function getRowSlots(root: HTMLElement, rowIndex: number): HTMLElement[] {
   return WORKFLOW_COLUMNS.map((col) =>
@@ -51,7 +52,9 @@ export function WorkflowMovement({ isActive, reducedMotion }: PlatformSceneProps
 
       const subtitle = card.querySelector<HTMLElement>("[data-subtitle]");
       const stages = WORKFLOW_ROWS[rowIndex]?.stages ?? [];
-      const start = 0.18 + rowIndex * journeyDuration;
+      // Overlap the journeys so the whole queue crosses the board in one scene.
+      // Each card still completes each leg from left to right in sequence.
+      const start = 0.18 + rowIndex * ROW_STAGGER;
       const first = slotMetrics[0];
 
       gsap.set(card, {
@@ -117,7 +120,7 @@ export function WorkflowMovement({ isActive, reducedMotion }: PlatformSceneProps
             </p>
             <div data-col-body className="flex min-h-0 flex-1 flex-col gap-1 overflow-hidden">
               {WORKFLOW_ROWS.map((row, rowIndex) => (
-                <div key={row.id} className="relative h-[30px] shrink-0">
+                <div key={row.id} className="relative min-h-[30px] flex-1">
                   <div
                     data-drop-slot
                     data-row={rowIndex}

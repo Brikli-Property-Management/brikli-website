@@ -26,7 +26,7 @@ export function RevenueLeakage({ isActive, reducedMotion }: PlatformSceneProps) 
 
     gsap.set(q(root, "[data-headline]"), { opacity: 0, y: 5 });
     gsap.set(q(root, "[data-annual]"), { opacity: 0 });
-    gsap.set(bars, { scaleX: 0, transformOrigin: "left center" });
+    gsap.set(bars, { width: "0%" });
     gsap.set(rows, { opacity: 0, y: 5 });
     gsap.set(affected, { opacity: 0, x: -6 });
     gsap.set(bottom, { opacity: 0, y: 4 });
@@ -53,7 +53,7 @@ export function RevenueLeakage({ isActive, reducedMotion }: PlatformSceneProps) 
       const bar = bars[i];
       if (bar) {
         const pct = REVENUE_LEAKAGE.causes[i].amount / maxAmount;
-        tl.to(bar, { scaleX: pct, duration: 0.42, ease: PLATFORM_EASE.out }, 0.82 + i * 0.16);
+        tl.to(bar, { width: `${pct * 100}%`, duration: 0.65, ease: PLATFORM_EASE.smooth }, 0.82 + i * 0.16);
       }
     });
 
@@ -98,8 +98,8 @@ export function RevenueLeakage({ isActive, reducedMotion }: PlatformSceneProps) 
               <div
                 data-leak-bar
                 data-reveal
-                className="h-full w-full rounded-full"
-                style={{ background: platformTheme.accentGreen }}
+                className="h-full rounded-full"
+                style={{ background: platformTheme.accentGreen, width: reducedMotion ? `${(cause.amount / Math.max(...REVENUE_LEAKAGE.causes.map((item) => item.amount))) * 100}%` : "0%" }}
               />
             </div>
           </div>

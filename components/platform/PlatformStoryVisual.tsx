@@ -17,10 +17,8 @@ const PILLAR_ANIMATIONS = {
 
 export function PlatformStoryVisual({
   pillarId,
-  isActive,
 }: {
   pillarId: PlatformPillarId;
-  isActive: boolean;
 }) {
   const [reducedMotion, setReducedMotion] = useState(false);
   const Animation = PILLAR_ANIMATIONS[pillarId];
@@ -41,7 +39,7 @@ export function PlatformStoryVisual({
     <div className="workflow-story-visual" aria-label={`${pillarId} platform animation`}>
       <Animation
         pillarId={pillarId}
-        isHovered={isActive}
+        isHovered={false}
         reducedMotion={reducedMotion}
       />
     </div>

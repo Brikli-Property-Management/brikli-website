@@ -52,7 +52,7 @@ export function NoticeGeneration({ isActive, reducedMotion }: PlatformSceneProps
       <p data-header data-reveal className="text-[10px] font-medium" style={{ color: platformTheme.textMuted }}>
         Preparing rent-increase notices
       </p>
-      <div className="mt-2 grid flex-1 grid-cols-3 gap-1.5 content-start">
+      <div className="mt-2 grid min-h-0 flex-1 grid-cols-3 grid-rows-6 gap-1.5">
         {NOTICE_DRAFTS.map((draft) => (
           <div
             key={draft.unit}

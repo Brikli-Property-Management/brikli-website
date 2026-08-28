@@ -18,12 +18,10 @@ export function RecordTree({ isActive, reducedMotion }: PlatformSceneProps) {
 
     blocks.forEach((block, bi) => {
       const levels = qa(block, "[data-tree-level]");
-      const docs = qa(block, "[data-tree-doc]");
       const check = q(block, "[data-check]");
 
       gsap.set(block, { opacity: 0, y: 8 });
       gsap.set(levels, { opacity: 0, x: -6 });
-      gsap.set(docs, { opacity: 0, x: -10 });
       gsap.set(check, { opacity: 0, scale: 0.4 });
 
       const start = bi * 0.85;
@@ -32,10 +30,6 @@ export function RecordTree({ isActive, reducedMotion }: PlatformSceneProps) {
 
       levels.forEach((level, li) => {
         tl.to(level, { opacity: 1, x: 0, duration: PLATFORM_INTERACTION.rowReveal, ease: PLATFORM_EASE.out }, start + 0.15 + li * 0.14);
-      });
-
-      docs.forEach((doc, di) => {
-        tl.to(doc, { opacity: 1, x: 0, duration: 0.24, ease: PLATFORM_EASE.out }, start + 0.35 + di * 0.12);
       });
 
       if (check) {
@@ -57,39 +51,42 @@ export function RecordTree({ isActive, reducedMotion }: PlatformSceneProps) {
       <p className="mb-2 text-[10px] font-medium uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
         Property hierarchy
       </p>
-      <div className="grid min-h-0 flex-1 grid-rows-2 gap-3 text-[10px]" style={{ color: platformTheme.text }}>
+      <div className="record-tree-list text-[10px]" style={{ color: platformTheme.text }}>
         {PROPERTY_TREE.map((item) => (
           <div
             key={item.property}
             data-tree-block
             data-reveal
-            className="flex min-h-0 flex-col justify-center overflow-hidden rounded border px-3 py-2.5"
+            className="record-tree-block"
             style={{ borderColor: platformTheme.border, background: platformTheme.accentTint }}
           >
-            <div className="flex items-center justify-between font-medium">
+            <div className="record-tree-property font-medium">
               <span data-tree-level data-reveal>{item.property}</span>
               <span data-check data-reveal className="text-[9px]" style={{ color: platformTheme.accentGreen }}>✓</span>
             </div>
-            <div className="mt-2 grid gap-1 border-l pl-3" style={{ borderColor: platformTheme.border }}>
-              <div data-tree-level data-reveal style={{ color: platformTheme.textMuted }}>
-                {item.unit}
+            <div className="record-tree-details">
+              <div data-tree-level data-reveal className="record-tree-row">
+                <span style={{ color: platformTheme.textSubtle }}>Unit</span>
+                <strong style={{ color: platformTheme.textMuted }}>{item.unit.replace(/^Unit\s*/, "")}</strong>
               </div>
-              <div data-tree-level data-reveal className="ml-3" style={{ color: platformTheme.textMuted }}>
-                {item.tenant}
+              <div data-tree-level data-reveal className="record-tree-row">
+                <span style={{ color: platformTheme.textSubtle }}>Tenant</span>
+                <strong style={{ color: platformTheme.textMuted }}>{item.tenant}</strong>
               </div>
-              <div className="ml-6 grid gap-1 border-l pl-2" style={{ borderColor: platformTheme.accentGreen }}>
-                {item.documents.map((doc) => (
-                  <div
-                    key={doc}
-                    data-tree-doc
-                    data-reveal
-                    className="flex min-w-0 items-center gap-1"
-                    style={{ color: platformTheme.textMuted }}
-                  >
-                    <span className="shrink-0" style={{ color: platformTheme.accentGreen }}>—</span>
-                    <span className="truncate">{doc}</span>
-                  </div>
-                ))}
+              <div className="record-tree-documents">
+                <span style={{ color: platformTheme.textSubtle }}>Documents</span>
+                <div>
+                  {item.documents.map((doc) => (
+                    <div
+                      key={doc}
+                      className="record-tree-document"
+                      style={{ color: platformTheme.textMuted }}
+                    >
+                      <span style={{ color: platformTheme.accentGreen }}>—</span>
+                      <span className="truncate">{doc}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>

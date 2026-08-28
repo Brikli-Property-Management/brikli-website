@@ -16,10 +16,12 @@ export function RentReconciliation({ isActive, reducedMotion }: PlatformScenePro
     const tl = gsap.timeline();
     const cards = qa(root, "[data-evidence]");
     const formula = qa(root, "[data-formula-part]");
+    const details = qa(root, "[data-reconciliation-detail]");
     const verified = q(root, "[data-verified]");
 
     gsap.set(cards, { opacity: 0, y: 8 });
     gsap.set(formula, { opacity: 0, y: 4 });
+    gsap.set(details, { opacity: 0, y: 6 });
     gsap.set(verified, { opacity: 0, scale: 0.97 });
 
     cards.forEach((card, i) => {
@@ -31,6 +33,10 @@ export function RentReconciliation({ isActive, reducedMotion }: PlatformScenePro
       tl.to(part, { opacity: 1, y: 0, duration: 0.2, ease: PLATFORM_EASE.out }, `formula+=${i * 0.12}`);
     });
 
+    details.forEach((detail, i) => {
+      tl.to(detail, { opacity: 1, y: 0, duration: 0.24, ease: PLATFORM_EASE.out }, `-=0.1`);
+    });
+
     tl.to(verified, { opacity: 1, scale: 1, duration: 0.35, ease: PLATFORM_EASE.out }, "-=0.05");
     return tl;
   });
@@ -39,7 +45,7 @@ export function RentReconciliation({ isActive, reducedMotion }: PlatformScenePro
     <div
       ref={rootRef}
       data-scene={0}
-      className={cn("absolute inset-0 flex flex-col rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
+      className={cn("absolute inset-0 flex flex-col overflow-hidden rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
       aria-hidden={!isActive && !reducedMotion}
     >
       <div className="grid grid-cols-2 gap-1.5">
@@ -78,10 +84,39 @@ export function RentReconciliation({ isActive, reducedMotion }: PlatformScenePro
           </span>
         ))}
       </div>
+      <div className="grid shrink-0 grid-cols-2 content-center gap-1.5 py-1">
+        <div
+          data-reconciliation-detail
+          data-reveal
+          className="border px-2 py-2"
+          style={{ borderColor: platformTheme.border, background: "rgba(255,255,255,.45)" }}
+        >
+          <p className="text-[8px] font-semibold uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>Lease base</p>
+          <p className="text-[11px] font-medium" style={{ color: platformTheme.text }}>$1,850</p>
+        </div>
+        <div
+          data-reconciliation-detail
+          data-reveal
+          className="border px-2 py-2"
+          style={{ borderColor: platformTheme.border, background: "rgba(255,255,255,.45)" }}
+        >
+          <p className="text-[8px] font-semibold uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>Amendment</p>
+          <p className="text-[11px] font-medium" style={{ color: platformTheme.text }}>+$75 parking</p>
+        </div>
+        <div
+          data-reconciliation-detail
+          data-reveal
+          className="col-span-2 border-l-2 px-2 py-2"
+          style={{ borderColor: platformTheme.accentGreen, background: platformTheme.accentTint }}
+        >
+          <p className="text-[8px] uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>Resolution</p>
+          <p className="text-[10px] font-medium" style={{ color: platformTheme.text }}>Verified documents replace the stale PMS value.</p>
+        </div>
+      </div>
       <div
         data-verified
         data-reveal
-        className="mt-auto rounded border px-3 py-2 text-center"
+        className="relative -top-6 mb-4 shrink-0 border px-3 py-1.5 text-center"
         style={{ borderColor: platformTheme.accentGreen, background: platformTheme.accentTint, opacity: reducedMotion ? 1 : 0 }}
       >
         <p className="text-[8px] font-semibold uppercase tracking-wider" style={{ color: platformTheme.accentGreen }}>{VERIFIED_RENT.label}</p>

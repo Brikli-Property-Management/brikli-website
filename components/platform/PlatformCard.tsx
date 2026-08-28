@@ -5,6 +5,9 @@ import type { PlatformPillarMeta } from "@/components/platform/types";
 import { platformTheme, PLATFORM_VIZ_VIEWPORT } from "@/components/platform/platformTheme";
 import { cn } from "@/lib/utils";
 
+const PLATFORM_HOVER_GRADIENT =
+  "linear-gradient(145deg, rgba(255, 255, 255, 0.32) 18%, rgba(21, 68, 46, 0.16) 100%)";
+
 export type PlatformCardProps = {
   pillar: PlatformPillarMeta;
   isHovered: boolean;
@@ -22,7 +25,7 @@ export function PlatformCard({
   return (
     <article
       className={cn(
-        "flex flex-col overflow-hidden rounded-2xl border bg-[#FAF9F6] transition-[border-color,box-shadow] duration-200",
+        "relative flex flex-col overflow-hidden rounded-2xl border transition-[border-color,box-shadow,background] duration-300",
         isHovered
           ? "border-[#C8D5CC] shadow-[0_0_0_1px_rgba(29,59,35,0.08)]"
           : "border-[#EFEFED] shadow-none",
@@ -31,6 +34,12 @@ export function PlatformCard({
       onMouseLeave={() => onHoverChange(false)}
       data-pillar={pillar.id}
     >
+      <div
+        className="relative flex flex-col overflow-hidden transition-[background] duration-300"
+        style={{
+          background: isHovered ? PLATFORM_HOVER_GRADIENT : platformTheme.cardBg,
+        }}
+      >
       {/* PRODUCT VISUAL — fixed viewport; only this region animates */}
       <div
         className="relative w-full overflow-hidden"
@@ -38,9 +47,7 @@ export function PlatformCard({
           aspectRatio: PLATFORM_VIZ_VIEWPORT.aspectRatio,
           minHeight: PLATFORM_VIZ_VIEWPORT.minHeightPx,
           maxHeight: PLATFORM_VIZ_VIEWPORT.maxHeightPx,
-          background: isHovered
-            ? platformTheme.accentGradient
-            : platformTheme.vizBg,
+          background: "transparent",
         }}
         data-platform-viz
       >
@@ -83,6 +90,7 @@ export function PlatformCard({
         >
           {pillar.subtitle}
         </p>
+      </div>
       </div>
     </article>
   );

@@ -15,19 +15,14 @@ export function EligibilityChecks({ isActive, reducedMotion }: PlatformSceneProp
   useSceneAnimation(isActive, reducedMotion, rootRef, (root) => {
     const tl = gsap.timeline();
     const rows = qa(root, "[data-row]");
-    const checks = qa(root, "[data-check]");
     const action = q(root, "[data-action]");
 
     gsap.set(rows, { opacity: 0, x: -10 });
-    gsap.set(checks, { opacity: 0, scale: 0.4, rotation: -45 });
     gsap.set(action, { opacity: 0, y: 8, scale: 0.98 });
 
     rows.forEach((row, i) => {
       tl.to(row, { opacity: 1, x: 0, duration: PLATFORM_INTERACTION.rowReveal, ease: PLATFORM_EASE.out }, i * 0.32);
       tl.to(row, { borderColor: platformTheme.accentGreen, duration: 0.15 }, i * 0.32 + 0.12);
-      if (checks[i]) {
-        tl.to(checks[i], { opacity: 1, scale: 1, rotation: 0, duration: PLATFORM_INTERACTION.checkReveal, ease: "back.out(1.6)" }, i * 0.32 + 0.18);
-      }
     });
 
     tl.to(action, { opacity: 1, y: 0, scale: 1, duration: 0.32, ease: PLATFORM_EASE.out }, "-=0.08");
@@ -57,7 +52,7 @@ export function EligibilityChecks({ isActive, reducedMotion }: PlatformSceneProp
               <p className="text-[9px]" style={{ color: platformTheme.textMuted }}>{row.label}</p>
               <p className="text-[10px] font-semibold" style={{ color: platformTheme.text }}>{row.value}</p>
             </div>
-            <span data-check data-reveal className="text-sm font-bold" style={{ color: platformTheme.accentGreen }}>✓</span>
+            <span className="shrink-0 text-sm font-bold" style={{ color: platformTheme.accentGreen }}>✓</span>
           </div>
         ))}
       </div>

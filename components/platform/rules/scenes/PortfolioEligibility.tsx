@@ -105,12 +105,12 @@ export function PortfolioEligibility({ isActive, reducedMotion }: PlatformSceneP
         ))}
       </div>
 
-      <div className="mt-2 space-y-1">
+      <div className="portfolio-blockers mt-2">
         <p className="text-[8px] font-medium uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
           Blockers
         </p>
         {PORTFOLIO_ELIGIBILITY.blockers.map((b) => (
-          <div key={b.label} data-blocker data-reveal className="space-y-0.5">
+          <div key={b.label} data-blocker data-reveal className="portfolio-blocker-row">
             <div className="flex items-center justify-between text-[9px]">
               <span style={{ color: platformTheme.textMuted }}>{b.label}</span>
               <span className="font-semibold tabular-nums" style={{ color: platformTheme.text }}>{b.count}</span>
@@ -131,7 +131,7 @@ export function PortfolioEligibility({ isActive, reducedMotion }: PlatformSceneP
         ))}
       </div>
 
-      <div className="mt-2 min-h-0 flex-1 space-y-0.5 overflow-hidden">
+      <div className="portfolio-tenancies mt-3 grid min-h-0 flex-1 grid-rows-[auto_repeat(5,minmax(0,1fr))] gap-1 overflow-hidden">
         <p className="text-[8px] font-medium uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
           Blocked tenancies
         </p>
@@ -140,7 +140,7 @@ export function PortfolioEligibility({ isActive, reducedMotion }: PlatformSceneP
             key={t.unit}
             data-tenancy-row
             data-reveal
-            className="flex items-center justify-between gap-2 rounded border px-1.5 py-0.5"
+            className="flex min-h-0 items-center justify-between gap-2 border px-1.5 py-0.5"
             style={{ borderColor: platformTheme.border }}
           >
             <div className="min-w-0">

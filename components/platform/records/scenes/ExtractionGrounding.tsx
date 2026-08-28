@@ -35,7 +35,7 @@ export function ExtractionGrounding({ isActive, reducedMotion }: PlatformScenePr
     <div
       ref={rootRef}
       data-scene={2}
-      className={cn("absolute inset-0 flex gap-2 rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
+      className={cn("absolute inset-0 flex gap-2 overflow-hidden rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
       aria-hidden={!isActive && !reducedMotion}
     >
       <div className="flex min-h-0 flex-1 flex-col rounded border p-2 text-[9px]" style={{ borderColor: platformTheme.border, background: platformTheme.placeholderBg }}>
@@ -43,7 +43,7 @@ export function ExtractionGrounding({ isActive, reducedMotion }: PlatformScenePr
           <p className="font-medium" style={{ color: platformTheme.textSubtle }}>Lease preview</p>
           <span className="text-[8px]" style={{ color: platformTheme.accentGreen }}>4 fields found</span>
         </div>
-        <div className="grid min-h-0 flex-1 grid-rows-4 gap-2">
+        <div className="grid min-h-0 flex-1 grid-rows-[repeat(4,minmax(58px,1fr))] gap-2">
           {EXTRACTION_FIELDS.map((field) => (
             <div
               key={field.id}
@@ -61,7 +61,7 @@ export function ExtractionGrounding({ isActive, reducedMotion }: PlatformScenePr
           ))}
         </div>
       </div>
-      <div className="grid min-h-0 w-[42%] grid-rows-[repeat(4,minmax(0,1fr))_auto] gap-2">
+      <div className="grid min-h-0 w-[42%] grid-rows-[repeat(4,minmax(58px,1fr))_auto] gap-2 overflow-hidden">
         {EXTRACTION_FIELDS.map((field) => (
           <div key={field.id} data-field data-reveal className="flex min-h-0 flex-col justify-center rounded border px-2 py-1" style={{ borderColor: platformTheme.border, background: platformTheme.accentTint }}>
             <p className="text-[8px] uppercase tracking-wide" style={{ color: platformTheme.textSubtle }}>{field.label}</p>

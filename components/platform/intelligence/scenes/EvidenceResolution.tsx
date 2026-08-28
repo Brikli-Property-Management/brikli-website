@@ -45,10 +45,10 @@ export function EvidenceResolution({ isActive, reducedMotion }: PlatformScenePro
     <div
       ref={rootRef}
       data-scene={3}
-      className={cn("absolute inset-0 flex flex-col rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
+      className={cn("absolute inset-0 flex flex-col overflow-hidden rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
       aria-hidden={!isActive && !reducedMotion}
     >
-      <div className="grid w-full grid-cols-4 gap-1">
+      <div className="grid w-full shrink-0 grid-cols-4 gap-1">
         {EVIDENCE_RESOLUTION.sources.map((src) => (
           <div
             key={src}
@@ -61,7 +61,7 @@ export function EvidenceResolution({ isActive, reducedMotion }: PlatformScenePro
           </div>
         ))}
       </div>
-      <svg className="my-1 h-8 w-full shrink-0" viewBox="0 0 200 32" fill="none" aria-hidden>
+      <svg className="mt-1 h-5 w-full shrink-0" viewBox="0 0 200 32" fill="none" aria-hidden>
         {[25, 75, 125, 175].map((x, i) => (
           <line
             key={i}
@@ -79,61 +79,90 @@ export function EvidenceResolution({ isActive, reducedMotion }: PlatformScenePro
           />
         ))}
       </svg>
-      <p className="text-center text-[8px] font-semibold uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
+      <div className="mb-2 grid shrink-0 grid-cols-4 gap-1">
+        {["Identity", "Amount", "Dates", "Citations"].map((label) => (
+          <div
+            key={label}
+            data-bottom
+            data-reveal
+            className="border-l-2 px-2 py-1"
+            style={{ borderColor: platformTheme.accentGreen, background: platformTheme.accentTint }}
+          >
+            <p className="text-[7px] uppercase tracking-wide" style={{ color: platformTheme.textSubtle }}>{label}</p>
+            <p className="text-[8px] font-semibold" style={{ color: platformTheme.text }}>Verified</p>
+          </div>
+        ))}
+      </div>
+      <p className="shrink-0 text-center text-[8px] font-semibold uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
         Supported operating fact
       </p>
       <div
         data-fact
         data-reveal
-        className="mt-1 rounded border px-4 py-2 text-center"
+        className="mt-1 grid h-[96px] shrink-0 grid-rows-[auto_auto_auto] content-center gap-1 border px-4 py-2 text-center"
         style={{ borderColor: platformTheme.accentGreen, background: platformTheme.accentTint, opacity: reducedMotion ? 1 : 0 }}
       >
         <p className="text-sm font-semibold" style={{ color: platformTheme.text }}>{EVIDENCE_RESOLUTION.fact}</p>
         <p className="text-[9px]" style={{ color: platformTheme.textMuted }}>{EVIDENCE_RESOLUTION.effective}</p>
-      </div>
-      <div className="mt-1.5 flex justify-center gap-2">
-        {EVIDENCE_RESOLUTION.citations.map((c) => (
-          <span key={c} data-citation data-reveal className="text-[8px]" style={{ color: platformTheme.accentGreen, opacity: reducedMotion ? 1 : 0 }}>
-            {c}
-          </span>
-        ))}
+        <div className="flex justify-center gap-2">
+          {EVIDENCE_RESOLUTION.citations.map((c) => (
+            <span key={c} data-citation data-reveal className="text-[8px]" style={{ color: platformTheme.accentGreen, opacity: reducedMotion ? 1 : 0 }}>
+              {c}
+            </span>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-auto w-full space-y-1.5 pt-2">
+      <div className="mt-2 grid min-h-0 w-full flex-1 grid-cols-[1.05fr_.95fr] gap-2 overflow-hidden">
         <div
           data-bottom
           data-reveal
-          className="flex items-center justify-between rounded border px-2 py-1"
-          style={{ borderColor: platformTheme.border }}
+          className="flex min-h-0 flex-col justify-between border p-3"
+          style={{ borderColor: platformTheme.border, background: "rgba(255,255,255,.38)" }}
         >
-          <span className="text-[8px] font-semibold" style={{ color: platformTheme.text }}>
-            {EVIDENCE_RESOLUTION.context.property}
-          </span>
-          <span className="text-[8px]" style={{ color: platformTheme.textMuted }}>
-            {EVIDENCE_RESOLUTION.context.tenant}
-          </span>
+          <div>
+            <p className="text-[8px] font-semibold uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>Tenancy context</p>
+            <p className="mt-2 text-[11px] font-semibold" style={{ color: platformTheme.text }}>
+              {EVIDENCE_RESOLUTION.context.property}
+            </p>
+            <p className="mt-1 text-[9px]" style={{ color: platformTheme.textMuted }}>
+              {EVIDENCE_RESOLUTION.context.tenant}
+            </p>
+          </div>
+          <div className="border-t pt-2" style={{ borderColor: platformTheme.border }}>
+            <p className="text-[7px] uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>Effective date</p>
+            <p className="text-[10px] font-medium" style={{ color: platformTheme.text }}>{EVIDENCE_RESOLUTION.effective.replace("effective ", "")}</p>
+          </div>
         </div>
-        <div data-bottom data-reveal className="grid grid-cols-2 gap-1">
-          {EVIDENCE_RESOLUTION.breakdown.map((item) => (
-            <div
-              key={item.label}
-              className="rounded px-2 py-1"
-              style={{ background: platformTheme.placeholderBg }}
-            >
-              <p className="text-[7px]" style={{ color: platformTheme.textMuted }}>{item.label}</p>
-              <p className="text-[9px] font-semibold" style={{ color: platformTheme.text }}>{item.value}</p>
-            </div>
-          ))}
-        </div>
-        <p
+        <div
           data-bottom
           data-reveal
-          className="rounded px-2 py-1.5 text-center text-[8px] font-semibold"
-          style={{ background: platformTheme.accentTint, color: platformTheme.accentGreen, opacity: reducedMotion ? 1 : 0 }}
+          className="flex min-h-0 flex-col border p-3"
+          style={{ borderColor: platformTheme.border, background: platformTheme.placeholderBg }}
         >
-          {EVIDENCE_RESOLUTION.footer}
-        </p>
+          <p className="text-[8px] font-semibold uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>Verified composition</p>
+          <div className="mt-2 grid flex-1 content-center gap-2">
+            {EVIDENCE_RESOLUTION.breakdown.map((item) => (
+              <div
+                key={item.label}
+                className="border-b pb-2"
+                style={{ borderColor: platformTheme.border }}
+              >
+                <p className="text-[7px]" style={{ color: platformTheme.textMuted }}>{item.label}</p>
+                <p className="text-[10px] font-semibold" style={{ color: platformTheme.text }}>{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
+      <p
+        data-bottom
+        data-reveal
+        className="mt-2 shrink-0 px-2 py-2 text-center text-[8px] font-semibold"
+        style={{ background: platformTheme.accentTint, color: platformTheme.accentGreen, opacity: reducedMotion ? 1 : 0 }}
+      >
+        {EVIDENCE_RESOLUTION.footer}
+      </p>
     </div>
   );
 }

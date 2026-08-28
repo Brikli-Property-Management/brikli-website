@@ -57,10 +57,10 @@ export function LeaseExpiry({ isActive, reducedMotion }: PlatformSceneProps) {
           <p className="text-[9px]" style={{ color: platformTheme.textMuted }}>need action</p>
         </div>
       </div>
-      <div className="mt-3 flex flex-1 items-end justify-around gap-2 border-t pt-3" style={{ borderColor: platformTheme.border }}>
+      <div className="mt-3 flex min-h-0 flex-1 items-end justify-around gap-2 border-t pt-3" style={{ borderColor: platformTheme.border }}>
         {LEASE_EXPIRY.months.map((m) => (
-          <div key={m.month} className="flex flex-col items-center gap-1">
-            <div className="flex h-16 w-8 items-end justify-center rounded-sm" style={{ background: platformTheme.placeholderBg }}>
+          <div key={m.month} className="flex h-full flex-1 flex-col items-center justify-end gap-1">
+            <div className="flex h-[78%] min-h-28 w-8 max-w-full items-end justify-center rounded-sm" style={{ background: platformTheme.placeholderBg }}>
               <div
                 data-bar-fill
                 data-height={(m.count / maxCount) * 100}

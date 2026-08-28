@@ -6,7 +6,7 @@ import { BloomMark } from "./components/BloomMark";
 import { PlatformStoryVisual } from "@/components/platform/PlatformStoryVisual";
 
 const manifestoCopy =
-  "Brikli turns leases, rent rolls, and property records into compliant renewals, rent increases, and notices on the right provincial form and timeline. Every action is logged for audit, so your team can focus on decisions, not deadlines.";
+  "Brikli turns leases, rent rolls, and property  records into compliant  renewals, rent increases, and notices on the right provincial form and timeline. Every action is logged for audit, so your team can focus on decisions, not deadlines.";
 
 const manifestoWords = manifestoCopy.split(" ");
 
@@ -179,9 +179,7 @@ export default function Home() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [manifestoWordCount, setManifestoWordCount] = useState(0);
-  const [activeWorkflowStage, setActiveWorkflowStage] = useState(0);
   const manifestoTrackRef = useRef<HTMLDivElement>(null);
-  const workflowStoryRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const loadTimer = window.setTimeout(() => setLoaded(true), 60);
@@ -221,37 +219,6 @@ export default function Home() {
       window.clearTimeout(introRemoveTimer);
       window.removeEventListener("scroll", onScroll);
       observer.disconnect();
-    };
-  }, []);
-
-  useEffect(() => {
-    let animationFrame = 0;
-
-    const updateWorkflowStage = () => {
-      animationFrame = 0;
-      const section = workflowStoryRef.current;
-      if (!section || window.innerWidth <= 780) return;
-
-      const rect = section.getBoundingClientRect();
-      const scrollDistance = Math.max(rect.height - window.innerHeight, 1);
-      const progress = Math.min(Math.max(-rect.top / scrollDistance, 0), 0.9999);
-      const nextStage = Math.floor(progress * workflowStoryStages.length);
-
-      setActiveWorkflowStage((current) => current === nextStage ? current : nextStage);
-    };
-
-    const requestUpdate = () => {
-      if (!animationFrame) animationFrame = window.requestAnimationFrame(updateWorkflowStage);
-    };
-
-    window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("resize", requestUpdate);
-    requestUpdate();
-
-    return () => {
-      window.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("resize", requestUpdate);
-      if (animationFrame) window.cancelAnimationFrame(animationFrame);
     };
   }, []);
 
@@ -449,22 +416,18 @@ export default function Home() {
         <div className="principles-spacer" aria-hidden="true" />
       </section>
 
-      <section className="workflow-story" id="platform-workflow" ref={workflowStoryRef} aria-label="How Brikli processes real estate operations">
+      <section className="workflow-story" id="platform-workflow" aria-label="How Brikli processes real estate operations">
         <div className="workflow-story-sticky">
           <div className="container workflow-story-layout">
             <div className="workflow-story-cards" role="list" aria-label="Brikli workflow stages">
-              {workflowStoryStages.map((stage, index) => (
+              {workflowStoryStages.map((stage) => (
                 <article
-                  className={`workflow-story-card ${index === activeWorkflowStage ? "workflow-story-card-active" : ""}`}
+                  className="workflow-story-card"
                   key={stage.number}
                   role="listitem"
-                  aria-current={index === activeWorkflowStage ? "step" : undefined}
                 >
                   <div className="workflow-story-card-visual">
-                    <PlatformStoryVisual
-                      pillarId={stage.id}
-                      isActive={index === activeWorkflowStage}
-                    />
+                    <PlatformStoryVisual pillarId={stage.id} />
                   </div>
                   <div className="workflow-story-card-content">
                     <div className="workflow-story-card-heading">

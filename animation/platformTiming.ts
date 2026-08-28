@@ -46,7 +46,7 @@ export const PLATFORM_SCENE_COUNT = 4;
 
 /** Per-pillar scene durations — sum ≈ PLATFORM_LOOP_DURATION.default */
 export const PLATFORM_PILLAR_SCENE_DURATIONS: Record<PlatformPillarId, readonly number[]> = {
-  records: [3.2, 3.4, 3.0, 3.4],
+  records: [4.4, 3.4, 3.0, 3.4],
   intelligence: [3.4, 3.2, 3.6, 3.0],
   rules: [3.0, 3.4, 3.2, 3.6],
   execution: [3.6, 3.0, 3.4, 3.2],

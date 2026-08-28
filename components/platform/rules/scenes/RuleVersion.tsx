@@ -88,17 +88,17 @@ export function RuleVersion({ isActive, reducedMotion }: PlatformSceneProps) {
         </div>
       </div>
 
-      <div className="mt-2 min-h-0 flex-1 overflow-hidden">
+      <div className="mt-2 flex min-h-0 flex-1 flex-col overflow-hidden">
         <p className="text-[8px] font-medium uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
           Recent updates
         </p>
-        <div className="mt-0.5 space-y-0.5">
+        <div className="mt-2 grid shrink-0 grid-cols-2 gap-2">
           {RULE_UPDATES.map((update) => (
             <div
               key={`${update.jurisdiction}-${update.change}`}
               data-update
               data-reveal
-              className="rounded border px-1.5 py-1"
+              className="flex min-h-[74px] flex-col justify-center border px-2 py-2"
               style={{ borderColor: platformTheme.border, background: platformTheme.placeholderBg }}
             >
               <div className="flex items-start justify-between gap-2">
@@ -112,6 +112,18 @@ export function RuleVersion({ isActive, reducedMotion }: PlatformSceneProps) {
               <p className="text-[7px] leading-snug" style={{ color: platformTheme.textMuted }}>
                 {update.change}
               </p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-3 grid flex-1 grid-cols-3 content-center gap-2">
+          {[
+            ["3", "jurisdictions"],
+            [String(RULES_EVALUATED), "tenancies"],
+            ["0", "outdated rules"],
+          ].map(([value, label]) => (
+            <div key={label} className="border-t pt-2 text-center" style={{ borderColor: platformTheme.border }}>
+              <p className="text-sm font-semibold tabular-nums" style={{ color: platformTheme.text }}>{value}</p>
+              <p className="text-[7px] uppercase tracking-wide" style={{ color: platformTheme.textMuted }}>{label}</p>
             </div>
           ))}
         </div>
