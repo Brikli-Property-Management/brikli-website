@@ -46,7 +46,7 @@ export function RuleVersion({ isActive, reducedMotion }: PlatformSceneProps) {
       ref={rootRef}
       data-scene={3}
       className={cn(
-        "absolute inset-0 flex flex-col overflow-hidden rounded-lg bg-white p-3",
+        "absolute inset-0 flex flex-col overflow-hidden rounded-lg bg-[#F4F1E8] p-3",
         sceneRootClass(isActive, reducedMotion),
       )}
       aria-hidden={!isActive && !reducedMotion}

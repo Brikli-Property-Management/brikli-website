@@ -35,27 +35,35 @@ export function ExtractionGrounding({ isActive, reducedMotion }: PlatformScenePr
     <div
       ref={rootRef}
       data-scene={2}
-      className={cn("absolute inset-0 flex gap-2 rounded-lg bg-white p-3", sceneRootClass(isActive, reducedMotion))}
+      className={cn("absolute inset-0 flex gap-2 rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
       aria-hidden={!isActive && !reducedMotion}
     >
-      <div className="flex-1 rounded border p-2 text-[9px]" style={{ borderColor: platformTheme.border, background: platformTheme.placeholderBg }}>
-        <p className="mb-2 font-medium" style={{ color: platformTheme.textSubtle }}>Lease preview</p>
-        {EXTRACTION_FIELDS.map((field) => (
-          <div key={field.id} className="relative mb-2 last:mb-0">
+      <div className="flex min-h-0 flex-1 flex-col rounded border p-2 text-[9px]" style={{ borderColor: platformTheme.border, background: platformTheme.placeholderBg }}>
+        <div className="mb-2 flex items-center justify-between border-b pb-2" style={{ borderColor: platformTheme.border }}>
+          <p className="font-medium" style={{ color: platformTheme.textSubtle }}>Lease preview</p>
+          <span className="text-[8px]" style={{ color: platformTheme.accentGreen }}>4 fields found</span>
+        </div>
+        <div className="grid min-h-0 flex-1 grid-rows-4 gap-2">
+          {EXTRACTION_FIELDS.map((field) => (
             <div
+              key={field.id}
               data-box
               data-reveal
-              className="absolute -inset-x-0.5 -inset-y-0.5 rounded border"
+              className="flex min-h-0 items-center justify-between rounded border px-2 py-1.5"
               style={{ borderColor: platformTheme.accentGreen, background: "rgba(29,59,35,0.04)" }}
-            />
-            <p style={{ color: platformTheme.textSubtle }}>{field.label}</p>
-            <p className="font-medium" style={{ color: platformTheme.text }}>{field.value}</p>
-          </div>
-        ))}
+            >
+              <div className="min-w-0">
+                <p style={{ color: platformTheme.textSubtle }}>{field.label}</p>
+                <p className="truncate font-medium" style={{ color: platformTheme.text }}>{field.value}</p>
+              </div>
+              <span className="ml-2 shrink-0 text-[8px]" style={{ color: platformTheme.accentGreen }}>{field.source}</span>
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="flex w-[42%] flex-col justify-center gap-1.5">
+      <div className="grid min-h-0 w-[42%] grid-rows-[repeat(4,minmax(0,1fr))_auto] gap-2">
         {EXTRACTION_FIELDS.map((field) => (
-          <div key={field.id} data-field data-reveal className="rounded border px-2 py-1" style={{ borderColor: platformTheme.border }}>
+          <div key={field.id} data-field data-reveal className="flex min-h-0 flex-col justify-center rounded border px-2 py-1" style={{ borderColor: platformTheme.border, background: platformTheme.accentTint }}>
             <p className="text-[8px] uppercase tracking-wide" style={{ color: platformTheme.textSubtle }}>{field.label}</p>
             <p className="text-[10px] font-semibold" style={{ color: platformTheme.text }}>{field.value}</p>
             <p className="text-[8px]" style={{ color: platformTheme.accentGreen }}>{field.source}</p>

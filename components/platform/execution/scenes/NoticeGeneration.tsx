@@ -46,7 +46,7 @@ export function NoticeGeneration({ isActive, reducedMotion }: PlatformSceneProps
     <div
       ref={rootRef}
       data-scene={0}
-      className={cn("absolute inset-0 flex flex-col rounded-lg bg-white p-3", sceneRootClass(isActive, reducedMotion))}
+      className={cn("absolute inset-0 flex flex-col rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
       aria-hidden={!isActive && !reducedMotion}
     >
       <p data-header data-reveal className="text-[10px] font-medium" style={{ color: platformTheme.textMuted }}>

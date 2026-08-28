@@ -3,12 +3,43 @@
 import Image from "next/image";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { BloomMark } from "./components/BloomMark";
-import { PlatformSection } from "@/components/platform/PlatformSection";
+import { PlatformStoryVisual } from "@/components/platform/PlatformStoryVisual";
 
 const manifestoCopy =
   "Brikli turns leases, rent rolls, and property records into compliant renewals, rent increases, and notices on the right provincial form and timeline. Every action is logged for audit, so your team can focus on decisions, not deadlines.";
 
 const manifestoWords = manifestoCopy.split(" ");
+
+const workflowStoryStages = [
+  {
+    id: "records",
+    number: "01",
+    title: "Records",
+    description: "Complete records",
+    copy: "Leases, amendments, rent rolls, notices, invoices, and insurance certificates arrive from inboxes, PMS exports, scans, and ZIPs. Brikli brings them into one source-backed tenancy record per unit, with every fact linked to the exact page and clause it came from.",
+  },
+  {
+    id: "intelligence",
+    number: "02",
+    title: "Intelligence",
+    description: "Verified facts",
+    copy: "Every extracted value—rent, deposits, dates, clauses, parking, and utilities—is tied to the exact source it came from. When documents disagree or evidence is missing, Brikli surfaces the conflict side by side and sends it for review instead of guessing.",
+  },
+  {
+    id: "rules",
+    number: "03",
+    title: "Rules",
+    description: "Correct rules",
+    copy: "Brikli applies versioned rule packs for each jurisdiction and effective date, calculating lawful increases, notice periods, deposit rules, and filing windows deterministically. Every result cites the governing rule and version, so compliance stays traceable as regulations change.",
+  },
+  {
+    id: "execution",
+    number: "04",
+    title: "Execution",
+    description: "Work delivered",
+    copy: "Brikli drafts renewals, rent-increase notices, arrears letters, and compliance requests from verified data, attaches the supporting citations, and routes them into an approval queue. Sensitive actions always wait for human sign-off, while every decision and delivery step is recorded in the audit trail.",
+  },
+] as const;
 
 const faqs = [
   {
@@ -148,7 +179,9 @@ export default function Home() {
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
   const [manifestoWordCount, setManifestoWordCount] = useState(0);
+  const [activeWorkflowStage, setActiveWorkflowStage] = useState(0);
   const manifestoTrackRef = useRef<HTMLDivElement>(null);
+  const workflowStoryRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const loadTimer = window.setTimeout(() => setLoaded(true), 60);
@@ -188,6 +221,37 @@ export default function Home() {
       window.clearTimeout(introRemoveTimer);
       window.removeEventListener("scroll", onScroll);
       observer.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    let animationFrame = 0;
+
+    const updateWorkflowStage = () => {
+      animationFrame = 0;
+      const section = workflowStoryRef.current;
+      if (!section || window.innerWidth <= 780) return;
+
+      const rect = section.getBoundingClientRect();
+      const scrollDistance = Math.max(rect.height - window.innerHeight, 1);
+      const progress = Math.min(Math.max(-rect.top / scrollDistance, 0), 0.9999);
+      const nextStage = Math.floor(progress * workflowStoryStages.length);
+
+      setActiveWorkflowStage((current) => current === nextStage ? current : nextStage);
+    };
+
+    const requestUpdate = () => {
+      if (!animationFrame) animationFrame = window.requestAnimationFrame(updateWorkflowStage);
+    };
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("resize", requestUpdate);
+    requestUpdate();
+
+    return () => {
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("resize", requestUpdate);
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
     };
   }, []);
 
@@ -350,12 +414,6 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="hero-green-band" aria-label="Customer trust">
-        <div className="container">
-          <p>Trusted by leading <br />owners and operators</p>
-        </div>
-      </section>
-
       <section className="manifesto" id="platform">
         <div className="manifesto-track" ref={manifestoTrackRef}>
           <div className="manifesto-sticky">
@@ -391,7 +449,37 @@ export default function Home() {
         <div className="principles-spacer" aria-hidden="true" />
       </section>
 
-      <PlatformSection />
+      <section className="workflow-story" id="platform-workflow" ref={workflowStoryRef} aria-label="How Brikli processes real estate operations">
+        <div className="workflow-story-sticky">
+          <div className="container workflow-story-layout">
+            <div className="workflow-story-cards" role="list" aria-label="Brikli workflow stages">
+              {workflowStoryStages.map((stage, index) => (
+                <article
+                  className={`workflow-story-card ${index === activeWorkflowStage ? "workflow-story-card-active" : ""}`}
+                  key={stage.number}
+                  role="listitem"
+                  aria-current={index === activeWorkflowStage ? "step" : undefined}
+                >
+                  <div className="workflow-story-card-visual">
+                    <PlatformStoryVisual
+                      pillarId={stage.id}
+                      isActive={index === activeWorkflowStage}
+                    />
+                  </div>
+                  <div className="workflow-story-card-content">
+                    <div className="workflow-story-card-heading">
+                      <span>{stage.number}</span>
+                      <h3>{stage.title}</h3>
+                      <p className="workflow-story-card-description">{stage.description}</p>
+                    </div>
+                    <p className="workflow-story-card-copy">{stage.copy}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       <section className="engine section-dark" id="how-it-works">
         <div className="container">

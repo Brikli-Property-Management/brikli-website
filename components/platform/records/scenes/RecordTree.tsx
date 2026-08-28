@@ -51,50 +51,54 @@ export function RecordTree({ isActive, reducedMotion }: PlatformSceneProps) {
     <div
       ref={rootRef}
       data-scene={1}
-      className={cn("absolute inset-0 overflow-hidden rounded-lg bg-white p-3", sceneRootClass(isActive, reducedMotion))}
+      className={cn("absolute inset-0 flex flex-col overflow-hidden rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
       aria-hidden={!isActive && !reducedMotion}
     >
       <p className="mb-2 text-[10px] font-medium uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>
         Property hierarchy
       </p>
-      <div className="space-y-2 text-[10px]" style={{ color: platformTheme.text }}>
+      <div className="grid min-h-0 flex-1 grid-rows-2 gap-3 text-[10px]" style={{ color: platformTheme.text }}>
         {PROPERTY_TREE.map((item) => (
           <div
             key={item.property}
             data-tree-block
             data-reveal
-            className="rounded border px-2 py-1.5"
-            style={{ borderColor: platformTheme.border }}
+            className="flex min-h-0 flex-col justify-center overflow-hidden rounded border px-3 py-2.5"
+            style={{ borderColor: platformTheme.border, background: platformTheme.accentTint }}
           >
             <div className="flex items-center justify-between font-medium">
               <span data-tree-level data-reveal>{item.property}</span>
               <span data-check data-reveal className="text-[9px]" style={{ color: platformTheme.accentGreen }}>✓</span>
             </div>
-            <div data-tree-level data-reveal className="ml-3 mt-0.5" style={{ color: platformTheme.textMuted }}>
-              └ {item.unit}
-            </div>
-            <div data-tree-level data-reveal className="ml-6 mt-0.5" style={{ color: platformTheme.textMuted }}>
-              └ {item.tenant}
-            </div>
-            {item.documents.map((doc) => (
-              <div
-                key={doc}
-                data-tree-doc
-                data-reveal
-                className="ml-9 mt-0.5 flex items-center gap-1"
-                style={{ color: platformTheme.textMuted }}
-              >
-                <span style={{ color: platformTheme.accentGreen }}>├</span>
-                <span>{doc}</span>
+            <div className="mt-2 grid gap-1 border-l pl-3" style={{ borderColor: platformTheme.border }}>
+              <div data-tree-level data-reveal style={{ color: platformTheme.textMuted }}>
+                {item.unit}
               </div>
-            ))}
+              <div data-tree-level data-reveal className="ml-3" style={{ color: platformTheme.textMuted }}>
+                {item.tenant}
+              </div>
+              <div className="ml-6 grid gap-1 border-l pl-2" style={{ borderColor: platformTheme.accentGreen }}>
+                {item.documents.map((doc) => (
+                  <div
+                    key={doc}
+                    data-tree-doc
+                    data-reveal
+                    className="flex min-w-0 items-center gap-1"
+                    style={{ color: platformTheme.textMuted }}
+                  >
+                    <span className="shrink-0" style={{ color: platformTheme.accentGreen }}>—</span>
+                    <span className="truncate">{doc}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         ))}
       </div>
       <p
         data-matched
         data-reveal
-        className="mt-2 text-[10px] font-medium"
+        className="mt-2 shrink-0 text-[10px] font-medium"
         style={{ color: platformTheme.accentGreen, opacity: reducedMotion ? 1 : 0, transform: "translateY(4px)" }}
       >
         Documents matched to tenancy

@@ -45,7 +45,7 @@ export function EvidenceResolution({ isActive, reducedMotion }: PlatformScenePro
     <div
       ref={rootRef}
       data-scene={3}
-      className={cn("absolute inset-0 flex flex-col rounded-lg bg-white p-3", sceneRootClass(isActive, reducedMotion))}
+      className={cn("absolute inset-0 flex flex-col rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
       aria-hidden={!isActive && !reducedMotion}
     >
       <div className="grid w-full grid-cols-4 gap-1">

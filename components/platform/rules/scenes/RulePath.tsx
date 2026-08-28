@@ -43,7 +43,7 @@ export function RulePath({ isActive, reducedMotion }: PlatformSceneProps) {
     <div
       ref={rootRef}
       data-scene={1}
-      className={cn("absolute inset-0 flex flex-col items-center rounded-lg bg-white p-3", sceneRootClass(isActive, reducedMotion))}
+      className={cn("absolute inset-0 flex flex-col items-center rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
       aria-hidden={!isActive && !reducedMotion}
     >
       <p className="mb-2 self-start text-[10px] font-medium uppercase tracking-wider" style={{ color: platformTheme.textSubtle }}>

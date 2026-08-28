@@ -63,7 +63,7 @@ export function PortfolioEligibility({ isActive, reducedMotion }: PlatformSceneP
     <div
       ref={rootRef}
       data-scene={2}
-      className={cn("absolute inset-0 flex flex-col rounded-lg bg-white p-3", sceneRootClass(isActive, reducedMotion))}
+      className={cn("absolute inset-0 flex flex-col rounded-lg bg-[#F4F1E8] p-3", sceneRootClass(isActive, reducedMotion))}
       aria-hidden={!isActive && !reducedMotion}
     >
       <p data-checked data-reveal className="text-[10px] font-semibold" style={{ color: platformTheme.text }}>
